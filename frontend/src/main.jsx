@@ -40,7 +40,10 @@ import './aquarium3d-game.css';
 import './ui/hpz-theme.css';
 import './aquacare-stage04-0141.css';
 
-const path=location.pathname.replace(/\/$/,'')||'/';
+const basePath=import.meta.env.BASE_URL.replace(/\/$/,'');
+if(basePath){document.addEventListener('click',event=>{if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;const link=event.target.closest('a[href]');const href=link?.getAttribute('href');if(!href||!href.startsWith('/')||href.startsWith('//')||href===basePath||href.startsWith(`${basePath}/`)||link.target==='_blank')return;event.preventDefault();location.assign(`${basePath}${href}`)},true)}
+const pathname=location.pathname.replace(/\/$/,'')||'/';
+const path=(basePath&&(pathname===basePath||pathname.startsWith(`${basePath}/`))?pathname.slice(basePath.length)||'/':pathname).replace(/\/$/,'')||'/';
 const policy=['/chinhsach.html','/policy'].includes(path);
 const admin=path.startsWith('/admin');
 const market=path==='/market'||path.startsWith('/market/')||path==='/zwmarket'||path.startsWith('/zwmarket/');
