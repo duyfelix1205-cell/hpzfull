@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: catalog-backend, namespace: product-catalog }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: catalog-backend } }
+  template:
+    metadata: { labels: { app: catalog-backend } }
+    spec:
+      containers:
+        - name: backend
+          image: REPLACE_CATALOG_BACKEND_IMAGE
+          envFrom:
+            - configMapRef: { name: catalog-config }
+            - secretRef: { name: catalog-backend-secret }
+          ports: [{ containerPort: 8080 }]
+          livenessProbe: { httpGet: { path: /health/live, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          readinessProbe: { httpGet: { path: /health/ready, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 5 }
+          volumeMounts: [{ name: media, mountPath: /app/uploads }]
+      volumes: [{ name: media, persistentVolumeClaim: { claimName: catalog-media } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: catalog-backend, namespace: product-catalog }
+spec:
+  selector: { app: catalog-backend }
+  ports: [{ port: 8080, targetPort: 8080 }]

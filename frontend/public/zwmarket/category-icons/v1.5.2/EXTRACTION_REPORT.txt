@@ -1,0 +1,8 @@
+HPZ ZWMARKET FV-05 — DIRECT EXTRACTION V1.5.2
+STATUS: ASSETS READY FOR WEB UAT (NOT VISUAL UAT PASSED)
+24 PNG (512x512), 24 WebP (256x256). All RGB, opaque Navy background.
+fish, shrimp, aquatic-plants are preserved byte-for-byte from the V1.5 Batch 01 ZIP.
+21 remaining assets are direct rectangular crops from the flattened Final V1 image. No alpha extraction, AI redraw or vectorization.
+All source crop pixels retained unchanged; surrounding padding is a flat sampled Navy color and images are resized.
+LIMITATIONS: padding may create visible seams; glow can be cut at crop boundaries; small text/card details have been excluded using crop regions.
+Visual fidelity and integration usability require web UAT; do not interpret as Visual UAT PASS.

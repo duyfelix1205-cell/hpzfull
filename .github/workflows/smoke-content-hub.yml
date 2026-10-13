@@ -1,0 +1,96 @@
+name: Content Hub Production Smoke
+
+on:
+  workflow_run:
+    workflows: [Deploy Product Catalog Production]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: product-catalog-content-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, linux, nexora-catalog]
+    timeout-minutes: 10
+    env:
+      CATALOG_DOMAIN: ${{ vars.CATALOG_DOMAIN || 'catalog.hungtp.click' }}
+      EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || '' }}
+    steps:
+      - name: Verify Content Hub production routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v curl >/dev/null
+          BASE="https://$CATALOG_DOMAIN"
+          TMP="$(mktemp -d)"
+          trap 'rm -rf "$TMP"' EXIT
+
+          get200() {
+            local path="$1" out="$2" code
+            code="$(curl -sS -L --connect-timeout 10 --max-time 30 -o "$out" -w '%{http_code}' "$BASE$path")"
+            test "$code" = 200 || { echo "[ERROR] $path -> $code"; head -c 500 "$out" || true; exit 1; }
+            echo "[OK] $path -> 200"
+          }
+
+          get200 /health/live "$TMP/health.json"
+          if [ -n "${EXPECTED_SHA:-}" ]; then
+            grep -Fq "\"deploy_sha\":\"$EXPECTED_SHA\"" "$TMP/health.json" || { echo '[ERROR] deployed SHA mismatch'; cat "$TMP/health.json"; exit 1; }
+          fi
+
+          get200 /nhat-bao "$TMP/journal.html"
+          get200 /nhat-bao/mi-an-longfin "$TMP/longfin-entry.html"
+          get200 /nhat-bao/mi-an-longfin/experience "$TMP/longfin-experience.html"
+          get200 /campaigns/mi-an-longfin/hero.png "$TMP/longfin-hero.png"
+          get200 /campaigns/mi-an-longfin/source/experience.html "$TMP/longfin-source.html"
+          get200 /campaigns/mi-an-longfin/hero.png "$TMP/longfin-source-hero.png"
+          grep -Fq 'HPZ_Mi_An_Longfin_Prototype.html' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin UX source marker missing'; exit 1; }
+          grep -Fq 'BẢN TRẢI NGHIỆM · CHƯA NHẬN ĐƠN' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin simulation boundary missing'; exit 1; }
+          grep -Fq 'Giá đề xuất trong UX Source · chờ HPZ Catalog xác nhận' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin proposed-price boundary missing'; exit 1; }
+          grep -Fq 'Đặt trước 50%' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin 50% UX simulation missing'; exit 1; }
+          grep -Fq 'Thanh toán toàn bộ' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin full-payment UX simulation missing'; exit 1; }
+          grep -Fq 'Thử luồng đặt trước' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin preorder UX interaction missing'; exit 1; }
+          grep -Fq 'Không tạo đơn hàng và không thu tiền' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin no-order/no-payment boundary missing'; exit 1; }
+          grep -Fq 'integration:{order:null,payment:null}' "$TMP/longfin-source.html" || { echo '[ERROR] Longfin integration boundary missing'; exit 1; }
+          if grep -Eq '/api/v1/[^"'"'"']*(order|payment)|fetch\([^)]*(order|payment)' "$TMP/longfin-source.html"; then echo '[ERROR] real order/payment integration leaked into production campaign'; exit 1; fi
+          get200 /campaigns/mi-an-longfin/source/assets/preorder-source.jpg "$TMP/longfin-preorder.jpg"
+          get200 /campaigns/mi-an-longfin/source/assets/gallery-source-02.jpg "$TMP/longfin-gallery-02.jpg"
+          get200 /hpzwiki "$TMP/wiki.html"
+          get200 /admin/journal "$TMP/admin-journal.html"
+          get200 /admin/wiki "$TMP/admin-wiki.html"
+          get200 /admin/traffic "$TMP/admin-traffic.html"
+
+          get200 /api/v1/catalog/content/journal "$TMP/journal.json"
+          grep -Eq '"items"[[:space:]]*:[[:space:]]*\[' "$TMP/journal.json" || { echo '[ERROR] journal API response invalid'; cat "$TMP/journal.json"; exit 1; }
+
+          get200 /api/v1/catalog/content/wiki "$TMP/wiki.json"
+          grep -Eq '"items"[[:space:]]*:[[:space:]]*\[' "$TMP/wiki.json" || { echo '[ERROR] wiki API response invalid'; cat "$TMP/wiki.json"; exit 1; }
+
+          get200 /api/v1/catalog/content/taxonomy/journal-type "$TMP/journal-taxonomy.json"
+          grep -Eq '"items"[[:space:]]*:[[:space:]]*\[' "$TMP/journal-taxonomy.json" || { echo '[ERROR] journal taxonomy response invalid'; cat "$TMP/journal-taxonomy.json"; exit 1; }
+          grep -Fq 'ANNOUNCEMENT' "$TMP/journal-taxonomy.json" || { echo '[ERROR] journal default taxonomy missing'; cat "$TMP/journal-taxonomy.json"; exit 1; }
+
+          get200 /api/v1/catalog/content/taxonomy/wiki-category "$TMP/wiki-taxonomy.json"
+          grep -Eq '"items"[[:space:]]*:[[:space:]]*\[' "$TMP/wiki-taxonomy.json" || { echo '[ERROR] wiki taxonomy response invalid'; cat "$TMP/wiki-taxonomy.json"; exit 1; }
+          grep -Fq 'Kiến thức chung' "$TMP/wiki-taxonomy.json" || { echo '[ERROR] wiki default taxonomy missing'; cat "$TMP/wiki-taxonomy.json"; exit 1; }
+
+          SEARCH_MARKER='__nexora_search_should_not_match_7f3a9d__'
+          get200 "/api/v1/catalog/content/journal?q=$SEARCH_MARKER" "$TMP/journal-search.json"
+          grep -Eq '^\{"items":\[\]\}$' "$TMP/journal-search.json" || { echo '[ERROR] journal search query is not filtering results'; cat "$TMP/journal-search.json"; exit 1; }
+          get200 "/api/v1/catalog/content/wiki?q=$SEARCH_MARKER" "$TMP/wiki-search.json"
+          grep -Eq '^\{"items":\[\]\}$' "$TMP/wiki-search.json" || { echo '[ERROR] wiki search query is not filtering results'; cat "$TMP/wiki-search.json"; exit 1; }
+
+          ADMIN_CODE="$(curl -sS -o "$TMP/admin.json" -w '%{http_code}' --connect-timeout 10 --max-time 30 "$BASE/api/v1/admin/catalog/content/traffic?days=7")"
+          case "$ADMIN_CODE" in
+            401|403|404) echo "[OK] anonymous Admin analytics API blocked -> $ADMIN_CODE" ;;
+            *) echo "[ERROR] anonymous Admin analytics API unexpectedly reachable -> $ADMIN_CODE"; cat "$TMP/admin.json"; exit 1 ;;
+          esac
+
+          echo "[OK] Content Hub production smoke passed for ${EXPECTED_SHA:-current production release}"

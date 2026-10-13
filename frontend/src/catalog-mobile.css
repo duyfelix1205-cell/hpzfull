@@ -1,0 +1,97 @@
+/* ISS-2026-0020: keep the public fish catalog compact on phones without changing catalog data or API behavior. */
+@media (max-width: 760px) {
+  .legacy-public .catalog-page .toolbar {
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .legacy-public .catalog-page .search {
+    min-width: 100%;
+    padding: 9px 11px;
+  }
+
+  .legacy-public .catalog-page .fish-system-filter {
+    margin-top: 0;
+    padding-top: 10px;
+  }
+
+  .legacy-public .catalog-page .fish-system-filter__label {
+    margin-bottom: 6px;
+    font-size: .72rem;
+    letter-spacing: .03em;
+  }
+
+  .legacy-public .catalog-page .fish-system-filter__buttons {
+    flex-wrap: nowrap;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .legacy-public .catalog-page .fish-system-filter button {
+    flex: none;
+    padding: 5px 8px;
+    font-size: .74rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
+  .legacy-public .catalog-page .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .legacy-public .catalog-page .card {
+    min-width: 0;
+    border-radius: 12px;
+  }
+
+  .legacy-public .catalog-page .card .body {
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .legacy-public .catalog-page .card .vn {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: .82rem;
+    line-height: 1.2;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .legacy-public .catalog-page .card .en {
+    overflow: hidden;
+    font-size: .68rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .legacy-public .catalog-page .card .price {
+    margin-top: 5px;
+    font-size: .8rem;
+    line-height: 1.2;
+  }
+
+  .legacy-public .catalog-page .fish-system-tag {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    margin-top: 6px;
+    padding: 2px 5px;
+    font-size: .62rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .legacy-public .catalog-page .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

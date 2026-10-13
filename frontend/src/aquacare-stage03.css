@@ -1,0 +1,10 @@
+/* Scoped to /care via conditional React mount. Fixed single scene coordinate system. */
+body:has(.aquacare-stage03-scene){background:#090719!important;overflow-x:hidden}
+.aquacare-stage03-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;isolation:isolate;background:#090719}
+.aquacare-stage03-canvas{position:absolute;width:max(100vw,150vh);height:max(66.6667vw,100vh);left:50%;top:50%;transform:translate(-50%,-50%);overflow:hidden}
+.aquacare-stage03-layer{position:absolute;display:block;object-fit:fill;pointer-events:none;max-width:none;transform-origin:center center}
+body:has(.aquacare-stage03-scene) #root{position:relative;isolation:isolate;min-height:100vh}
+body:has(.aquacare-stage03-scene) #root>.aquacare-stage03-scene{z-index:0}
+body:has(.aquacare-stage03-scene) #root>:not(.aquacare-stage03-scene){position:relative;z-index:1}
+body:has(.aquacare-stage03-scene) .hpz-app-shell{background:transparent!important}
+@media(max-width:767px){.aquacare-stage03-canvas{width:max(100vw,150vh);height:max(66.6667vw,100vh)}body:has(.aquacare-stage03-scene){-webkit-overflow-scrolling:touch}}

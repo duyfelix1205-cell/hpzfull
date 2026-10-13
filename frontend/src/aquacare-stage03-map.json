@@ -1,0 +1,484 @@
+{
+  "version": "1.0",
+  "status": "technical handoff; visual differences and source-alpha limitations documented in QA_REPORT.md; not automatically LOCKED",
+  "reference_canvas": {
+    "width": 1536,
+    "height": 1024,
+    "aspect_ratio": "3:2",
+    "color_space": "sRGB"
+  },
+  "reference": "Reference/Scene_Reference.png",
+  "fish_count": {
+    "main": 1,
+    "school": 10,
+    "total": 11
+  },
+  "hero_safe_rect": {
+    "x": 184,
+    "y": 143,
+    "width": 461,
+    "height": 328,
+    "note": "desktop only; no UI is supplied"
+  },
+  "transform_convention": "x/y in source pixels, top-left before rotation; positive rotation_degrees is counter-clockwise; horizontal mirror before rotate; contain proportions, never stretch",
+  "layers": [
+    {
+      "id": "BG_Clean",
+      "asset": "Background/BG_Clean.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "z": 0
+    },
+    {
+      "id": "NEON_01",
+      "asset": "Fish/Fish_School.png",
+      "x": 350,
+      "y": 96,
+      "width": 95,
+      "z": 20,
+      "brightness": 0.75,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 12,
+      "motion_dy": 5,
+      "height": 48,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 338,
+        "x_max": 362,
+        "y_min": 91,
+        "y_max": 101
+      },
+      "normalized_rect": [
+        0.227865,
+        0.09375,
+        0.061849,
+        0.046875
+      ]
+    },
+    {
+      "id": "NEON_02",
+      "asset": "Fish/Fish_School.png",
+      "x": 1109,
+      "y": 207,
+      "width": 79,
+      "z": 21,
+      "brightness": 0.69,
+      "flip_x": true,
+      "rotation_degrees": 18,
+      "motion_dx": 10,
+      "motion_dy": 5,
+      "height": 40,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1099,
+        "x_max": 1119,
+        "y_min": 202,
+        "y_max": 212
+      },
+      "normalized_rect": [
+        0.722005,
+        0.202148,
+        0.051432,
+        0.039062
+      ]
+    },
+    {
+      "id": "NEON_10",
+      "asset": "Fish/Fish_School.png",
+      "x": 623,
+      "y": 365,
+      "width": 98,
+      "z": 22,
+      "brightness": 0.75,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 10,
+      "motion_dy": 5,
+      "height": 49,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 613,
+        "x_max": 633,
+        "y_min": 360,
+        "y_max": 370
+      },
+      "normalized_rect": [
+        0.405599,
+        0.356445,
+        0.063802,
+        0.047852
+      ]
+    },
+    {
+      "id": "MAIN_01",
+      "asset": "Fish/Fish_Main.png",
+      "x": 746,
+      "y": 201,
+      "width": 365,
+      "z": 30,
+      "brightness": 0.9,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 10,
+      "motion_dy": 6,
+      "height": 331,
+      "source_size": [
+        1316,
+        1195
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 736,
+        "x_max": 756,
+        "y_min": 195,
+        "y_max": 207
+      },
+      "normalized_rect": [
+        0.485677,
+        0.196289,
+        0.23763,
+        0.323242
+      ]
+    },
+    {
+      "id": "NEON_03",
+      "asset": "Fish/Fish_School.png",
+      "x": 1330,
+      "y": 272,
+      "width": 112,
+      "z": 31,
+      "brightness": 0.82,
+      "flip_x": false,
+      "rotation_degrees": -6,
+      "motion_dx": 14,
+      "motion_dy": 6,
+      "height": 56,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1316,
+        "x_max": 1344,
+        "y_min": 266,
+        "y_max": 278
+      },
+      "normalized_rect": [
+        0.865885,
+        0.265625,
+        0.072917,
+        0.054688
+      ]
+    },
+    {
+      "id": "NEON_04",
+      "asset": "Fish/Fish_School.png",
+      "x": 1367,
+      "y": 390,
+      "width": 120,
+      "z": 32,
+      "brightness": 0.85,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 14,
+      "motion_dy": 6,
+      "height": 60,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1353,
+        "x_max": 1381,
+        "y_min": 384,
+        "y_max": 396
+      },
+      "normalized_rect": [
+        0.889974,
+        0.380859,
+        0.078125,
+        0.058594
+      ]
+    },
+    {
+      "id": "NEON_05",
+      "asset": "Fish/Fish_School.png",
+      "x": 1260,
+      "y": 465,
+      "width": 112,
+      "z": 33,
+      "brightness": 0.82,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 12,
+      "motion_dy": 7,
+      "height": 56,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1248,
+        "x_max": 1272,
+        "y_min": 458,
+        "y_max": 472
+      },
+      "normalized_rect": [
+        0.820312,
+        0.454102,
+        0.072917,
+        0.054688
+      ]
+    },
+    {
+      "id": "NEON_06",
+      "asset": "Fish/Fish_School.png",
+      "x": 1135,
+      "y": 521,
+      "width": 128,
+      "z": 34,
+      "brightness": 0.83,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 13,
+      "motion_dy": 7,
+      "height": 64,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1122,
+        "x_max": 1148,
+        "y_min": 514,
+        "y_max": 528
+      },
+      "normalized_rect": [
+        0.738932,
+        0.508789,
+        0.083333,
+        0.0625
+      ]
+    },
+    {
+      "id": "NEON_07",
+      "asset": "Fish/Fish_School.png",
+      "x": 1044,
+      "y": 480,
+      "width": 104,
+      "z": 35,
+      "brightness": 0.8,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 11,
+      "motion_dy": 7,
+      "height": 52,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 1033,
+        "x_max": 1055,
+        "y_min": 473,
+        "y_max": 487
+      },
+      "normalized_rect": [
+        0.679688,
+        0.46875,
+        0.067708,
+        0.050781
+      ]
+    },
+    {
+      "id": "NEON_08",
+      "asset": "Fish/Fish_School.png",
+      "x": 964,
+      "y": 554,
+      "width": 111,
+      "z": 36,
+      "brightness": 0.79,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 12,
+      "motion_dy": 7,
+      "height": 56,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 952,
+        "x_max": 976,
+        "y_min": 547,
+        "y_max": 561
+      },
+      "normalized_rect": [
+        0.627604,
+        0.541016,
+        0.072266,
+        0.054688
+      ]
+    },
+    {
+      "id": "NEON_09",
+      "asset": "Fish/Fish_School.png",
+      "x": 654,
+      "y": 429,
+      "width": 112,
+      "z": 37,
+      "brightness": 0.82,
+      "flip_x": false,
+      "rotation_degrees": 0,
+      "motion_dx": 10,
+      "motion_dy": 6,
+      "height": 56,
+      "source_size": [
+        1774,
+        887
+      ],
+      "anchor": "top-left of unrotated full PNG; rotate about center",
+      "opacity": 1,
+      "movement_bounds_top_left": {
+        "x_min": 644,
+        "x_max": 664,
+        "y_min": 423,
+        "y_max": 435
+      },
+      "normalized_rect": [
+        0.425781,
+        0.418945,
+        0.072917,
+        0.054688
+      ]
+    },
+    {
+      "id": "ENV_Wood_Occlusion",
+      "asset": "Environment_Layers/ENV_Wood_Occlusion.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "opacity": 1,
+      "rotation_degrees": 0,
+      "movement": "fixed; no independent translation, scaling or parallax",
+      "type": "registered scene-pixel occlusion patch, not a freestanding object cutout",
+      "z": 40
+    },
+    {
+      "id": "ENV_Plant_Right_Occlusion",
+      "asset": "Environment_Layers/ENV_Plant_Right_Occlusion.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "opacity": 1,
+      "rotation_degrees": 0,
+      "movement": "fixed; no independent translation, scaling or parallax",
+      "type": "registered scene-pixel occlusion patch, not a freestanding object cutout",
+      "z": 41
+    },
+    {
+      "id": "FG_Left",
+      "asset": "Foreground/FG_Left.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "opacity": 1,
+      "rotation_degrees": 0,
+      "movement": "fixed; no independent translation, scaling or parallax",
+      "type": "registered scene-pixel occlusion patch, not a freestanding object cutout",
+      "z": 50
+    },
+    {
+      "id": "FG_Right",
+      "asset": "Foreground/FG_Right.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "opacity": 1,
+      "rotation_degrees": 0,
+      "movement": "fixed; no independent translation, scaling or parallax",
+      "type": "registered scene-pixel occlusion patch, not a freestanding object cutout",
+      "z": 51
+    },
+    {
+      "id": "FG_Bottom",
+      "asset": "Foreground/FG_Bottom.png",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
+      "opacity": 1,
+      "rotation_degrees": 0,
+      "movement": "fixed; no independent translation, scaling or parallax",
+      "type": "registered scene-pixel occlusion patch, not a freestanding object cutout",
+      "z": 52
+    }
+  ],
+  "motion": {
+    "scope": "small breathing/swim translations only, no fish shape deformation",
+    "preserve_facing": true,
+    "synchronization": "independent phase; do not move fish all in one line",
+    "environment_fixed": true,
+    "reduced_motion": "render exactly mapped static frame"
+  },
+  "mobile": {
+    "fidelity_default": "uniform contain scaling, width / 1536; natural scene height width * 1024 / 1536; do not stretch; retain all 11 fish",
+    "crop_rule": "no crop for narrow mobile when all fish must remain visible; use navy outside scene if a taller area is needed; UX decides content outside scene",
+    "optional_landscape_crop": "only crop when transformed viewport contains union of all fish including motion margins and hero safe rect; otherwise use contain",
+    "forbidden": "portrait cover crop centered on main fish hides left and right neon and hero space; not approved",
+    "examples": [
+      {
+        "viewport_width": 390,
+        "scale": 0.25390625,
+        "scene_height": 260
+      },
+      {
+        "viewport_width": 430,
+        "scale": 0.2799479166666667,
+        "scene_height": 286.6666666666667
+      }
+    ]
+  },
+  "source_policy": {
+    "fish": "byte-identical Owner originals, rendered with uniform scaling, brightness and one mirror/rotation",
+    "environment": "registered RGBA scene-pixel patches, fixed in same canvas as BG_Clean. They intentionally repeat matching environment pixels over BG to occlude fish, NOT freestanding movable plant/wood objects. BG still contains plants/wood; do not translate patches.",
+    "optional_wood": "Owner original files retained unmodified; inactive because shapes/resolution differ from approved scene",
+    "plant_zip": "not used or packaged as runtime assets because white background and labels remain; scene-pixel plant patches substituted to preserve approved composition",
+    "background": "imagegen repaired fish regions only; composite outside repair mask retains original reference pixels"
+  }
+}

@@ -1,0 +1,79 @@
+/* ISS-2026-0141: full AquaCare functional journey presentation; no API or domain logic changes. */
+.aquacare-violet-workspace{position:relative;color:#f7f1ff;max-width:100%;isolation:isolate}
+.aquacare-violet-context{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 18px;padding:12px 18px;border:1px solid rgba(215,197,255,.22);border-radius:16px;background:rgba(10,13,36,.72);backdrop-filter:blur(24px)}
+.aquacare-violet-context__brand{display:flex;align-items:center;gap:10px;color:#c6e9e8;font-size:11px;font-weight:850;letter-spacing:.13em}
+.aquacare-violet-context__count{font-size:12px;color:#d5ccec;font-weight:650}
+.aquacare-violet-pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:#8cf4d9;box-shadow:0 0 0 5px rgba(136,240,216,.09),0 0 20px rgba(136,240,216,.55)}
+.aquacare-violet-area-intro{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,310px);align-items:center;gap:34px;margin-bottom:20px;padding:clamp(24px,3.8vw,48px);border:1px solid rgba(185,164,255,.3);border-radius:28px;background:linear-gradient(120deg,rgba(31,24,76,.94),rgba(24,30,69,.88) 50%,rgba(12,43,66,.81));box-shadow:inset 0 1px rgba(255,255,255,.09),0 20px 60px rgba(5,5,29,.3);overflow:hidden}
+.aquacare-violet-area-intro:before{content:"";position:absolute;right:-60px;top:-90px;width:290px;height:290px;border-radius:50%;background:radial-gradient(circle,rgba(170,119,252,.20),transparent 67%);pointer-events:none}
+.aquacare-violet-area-intro__eyebrow{display:block;color:#a6f0e4;font-size:10px;letter-spacing:.22em;font-weight:900;margin-bottom:15px}
+.aquacare-violet-area-intro h2{font-size:clamp(25px,3vw,39px)!important;line-height:1.15;max-width:670px;color:#fff!important;margin:0 0 16px;letter-spacing:-.035em}
+.aquacare-violet-area-intro p{font-size:14px;line-height:1.75;color:#ddd4f0;max-width:630px;margin:0}
+.aquacare-violet-quick-actions{position:relative;z-index:1;display:grid;gap:9px;align-self:stretch;align-content:center}
+.aquacare-violet-quick-actions button{cursor:pointer;border:1px solid rgba(186,183,252,.28);background:rgba(226,216,255,.09);color:#fbf8ff;border-radius:14px;min-height:52px;padding:12px 16px;display:flex;align-items:center;gap:13px;text-align:left;font-weight:750;font-size:13px;transition:background .18s,border-color .18s,transform .18s}
+.aquacare-violet-quick-actions button:hover,.aquacare-violet-quick-actions button:focus-visible{background:rgba(177,147,245,.24);border-color:#9e8ce4;transform:translateY(-1px)}
+.aquacare-violet-quick-actions button span{display:grid;place-items:center;color:#a4f5ec;border:1px solid rgba(176,219,233,.3);background:rgba(20,28,56,.75);width:29px;height:29px;border-radius:10px;flex:none}
+.aquacare-violet-area-intro--compact{grid-template-columns:minmax(0,1fr) 128px;padding:clamp(22px,3vw,36px);min-height:168px}
+.aquacare-violet-area-intro--compact h2{font-size:clamp(24px,2.4vw,34px)!important}
+.aquacare-violet-overview-number{position:relative;z-index:1;display:grid;justify-items:center;gap:7px;min-width:116px;padding:23px 11px;border:1px solid rgba(177,209,242,.3);border-radius:22px;background:rgba(20,26,61,.75)}
+.aquacare-violet-overview-number b{font-size:48px;line-height:1;font-weight:650;color:#c8b0ff}
+.aquacare-violet-overview-number small{font-size:9px;letter-spacing:.12em;font-weight:850;color:#d3e8f0;text-align:center}
+.aquacare-violet-tank-rail{display:flex;gap:11px;overflow:auto hidden;scrollbar-width:thin;margin:0 0 21px;padding:3px 0 8px}
+.aquacare-violet-tank-rail button{display:grid;grid-template-columns:24px minmax(0,1fr);gap:4px 8px;text-align:left;flex:0 0 220px;cursor:pointer;border:1px solid rgba(182,166,247,.26);background:rgba(15,16,45,.86);color:#f9f4ff;border-radius:16px;padding:15px;transition:border-color .2s,background .2s}
+.aquacare-violet-tank-rail button>span{grid-row:span 2;color:#8ce8df;font-size:19px}
+.aquacare-violet-tank-rail button b{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:13px}
+.aquacare-violet-tank-rail button small{color:#c6bcde;font-size:11px}
+.aquacare-violet-tank-rail button.active,.aquacare-violet-tank-rail button:hover{border-color:#b7a6ef;background:linear-gradient(115deg,rgba(86,65,137,.76),rgba(30,51,81,.93))}
+.aquacare-violet-app .aquacare-v1-nav{max-width:860px!important;grid-template-columns:repeat(3,minmax(0,1fr));margin:0 auto 24px!important}
+.aquacare-violet-app .aquacare-v1-nav button{font-size:14px;letter-spacing:.005em}
+.aquacare-violet-app .aquacare-v1-nav button:focus-visible,.aquacare-violet-app button:focus-visible,.aquacare-violet-app a:focus-visible{outline:3px solid #8beade;outline-offset:3px}
+.aquacare-violet-app .aquacare-violet-care-launch{border:1px solid rgba(143,217,219,.35)!important;background:linear-gradient(112deg,rgba(19,51,69,.87),rgba(34,22,75,.88))!important}
+.aquacare-violet-app .aquacare-v1-list-btn{display:block;text-align:left;width:100%;border-radius:13px!important;margin:6px 0;padding:14px 16px!important;transition:border-color .15s,background .15s}
+.aquacare-violet-app .aquacare-v1-list-btn:hover,.aquacare-violet-app .aquacare-v1-list-btn:focus-visible{border-color:#ac96f4!important;background:rgba(86,66,143,.65)!important}
+.aquacare-violet-app .aquacare-v1-event{border-radius:13px;padding:15px!important;margin:9px 0}
+.aquacare-violet-app .aquacare-v1-event p{overflow-wrap:anywhere}
+.aquacare-violet-app .aquacare-guide{border-left-color:#9a83d7!important}
+.aquacare-violet-app .aquacare-guide--critical{border-left-color:#ed898e!important}
+.aquacare-violet-app .aquacare-guide--warning{border-left-color:#eac08c!important}
+.aquacare-violet-app .hpz-card,.aquacare-violet-app .hpz-kpi{max-width:100%;overflow-wrap:anywhere}
+.aquacare-violet-app .aquacare-tank-hero{background:linear-gradient(125deg,rgba(45,40,97,.91),rgba(17,59,69,.87))!important}
+.aquacare-violet-app .aquacare-metrics>div,.aquacare-violet-app .aquacare-list-row,.aquacare-violet-app .aquacare-purchases>div,.aquacare-violet-app .aquacare-log-row{border-bottom-color:rgba(188,187,246,.18)}
+.aquacare-violet-app .aquacare-metrics span{color:#adf0ec}
+.aquacare-violet-app .aquacare-metrics b,.aquacare-violet-app .aquacare-list-row b,.aquacare-violet-app .aquacare-log-row b{color:#f9f7ff}
+.aquacare-violet-app .aquacare-list-row small,.aquacare-violet-app .aquacare-log-row time,.aquacare-violet-app .aquacare-log-row span{color:#c2b8dd}
+.aquacare-violet-app .aquacare-tank-hero p{color:#d0c8ec!important}
+.aquacare-violet-app .aquacare-v1-history-filter select,.aquacare-violet-app .aquacare-picker{background:#171b38!important;color:#fff!important;border-color:#806fab!important}
+.aquacare-violet-app .hpz-card .hpz-empty,.aquacare-violet-app .hpz-empty-state{background:rgba(17,20,45,.36);border-radius:15px;color:#e4dcf7}
+.aquacare-violet-app .hpz-btn,.aquacare-violet-app button,.aquacare-violet-app select,.aquacare-violet-app input{min-width:0}
+.aquacare-violet-gate .hpz-main{padding-top:clamp(60px,10vh,130px)}
+.aquacare-violet-gate .hpz-page-header{padding:22px;border-radius:21px;background:rgba(17,17,44,.72);border:1px solid rgba(182,172,246,.25)}
+body:has(.aquacare-violet-app) .hpz-modal{z-index:150!important}
+body:has(.aquacare-violet-app) .hpz-modal__content,body:has(.aquacare-violet-app) .hpz-modal-content{background:#171a38;color:#f5f0ff;border:1px solid #665c9c}
+@media(max-width:760px){
+ .aquacare-violet-context{padding:12px;align-items:flex-start}
+ .aquacare-violet-context__brand{font-size:9px}
+ .aquacare-violet-context__count{font-size:11px}
+ .aquacare-violet-area-intro{grid-template-columns:minmax(0,1fr);gap:21px;padding:22px 18px;border-radius:20px}
+ .aquacare-violet-area-intro h2{font-size:27px!important}
+ .aquacare-violet-area-intro--compact{grid-template-columns:minmax(0,1fr) auto}
+ .aquacare-violet-overview-number{min-width:85px;padding:14px 7px;border-radius:16px}
+ .aquacare-violet-overview-number b{font-size:32px}
+ .aquacare-violet-overview-number small{font-size:8px}
+ .aquacare-violet-quick-actions{grid-template-columns:1fr}
+ .aquacare-violet-app .aquacare-v1-nav{width:100%;gap:3px!important;padding:5px!important}
+ .aquacare-violet-app .aquacare-v1-nav button{font-size:12px!important;min-height:52px!important}
+ .aquacare-violet-tank-rail button{flex-basis:175px}
+ .aquacare-violet-app .aquacare-v1-toolbar{align-items:stretch}
+ .aquacare-violet-app .aquacare-v1-toolbar .hpz-actions{width:100%;display:flex}
+ .aquacare-violet-app .aquacare-v1-toolbar .hpz-actions>*{flex:1 1 auto}
+ .aquacare-violet-app .aquacare-v1-incident{min-width:0}
+}
+@media(max-width:420px){
+ .aquacare-violet-area-intro--compact{grid-template-columns:1fr}
+ .aquacare-violet-overview-number{justify-items:start;display:flex;align-items:center;gap:12px}
+ .aquacare-violet-quick-actions button{min-height:49px}
+ .aquacare-violet-app .aquacare-v1-nav button{font-size:11px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .aquacare-violet-workspace *, .aquacare-violet-workspace *::before,.aquacare-violet-workspace *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}

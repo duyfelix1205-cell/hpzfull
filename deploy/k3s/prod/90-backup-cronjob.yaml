@@ -1,0 +1,98 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: catalog-backup
+  namespace: product-catalog
+spec:
+  schedule: "15 2 * * *"
+  timeZone: "Asia/Bangkok"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 1800
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: catalog-backup
+            app.kubernetes.io/part-of: product-catalog
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: postgres:16-alpine
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: PGHOST
+                  value: catalog-postgres
+                - name: PGPORT
+                  value: "5432"
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: catalog-postgres-secret
+                      key: POSTGRES_DB
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: catalog-postgres-secret
+                      key: POSTGRES_USER
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: catalog-postgres-secret
+                      key: POSTGRES_PASSWORD
+                - name: DB_RETENTION_DAYS
+                  value: "14"
+                - name: MEDIA_RETENTION_DAYS
+                  value: "35"
+                - name: MEDIA_BACKUP_WEEKDAY
+                  value: "7"
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  mkdir -p /backup
+                  TS="$(date -u +%Y%m%dT%H%M%SZ)"
+                  DB_FILE="/backup/catalog_${TS}.dump"
+                  i=0
+                  until pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" >/dev/null 2>&1; do
+                    i=$((i+1)); [ "$i" -lt 60 ] || exit 1; sleep 5
+                  done
+                  pg_dump --host="$PGHOST" --port="$PGPORT" --username="$PGUSER" --dbname="$PGDATABASE" --format=custom --compress=6 --no-owner --no-acl --file="$DB_FILE"
+                  sha256sum "$DB_FILE" > "${DB_FILE}.sha256"
+                  DOW="$(date +%u)"
+                  if [ "$DOW" = "$MEDIA_BACKUP_WEEKDAY" ]; then
+                    MEDIA_FILE="/backup/media_${TS}.tar.gz"
+                    tar -czf "$MEDIA_FILE" -C /media .
+                    sha256sum "$MEDIA_FILE" > "${MEDIA_FILE}.sha256"
+                  fi
+                  find /backup -type f -name 'catalog_*.dump' -mtime +"$DB_RETENTION_DAYS" -delete
+                  find /backup -type f -name 'catalog_*.dump.sha256' -mtime +"$DB_RETENTION_DAYS" -delete
+                  find /backup -type f -name 'media_*.tar.gz' -mtime +"$MEDIA_RETENTION_DAYS" -delete
+                  find /backup -type f -name 'media_*.tar.gz.sha256' -mtime +"$MEDIA_RETENTION_DAYS" -delete
+                  ls -lh /backup | tail -n 20
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 64Mi
+                limits:
+                  cpu: 300m
+                  memory: 384Mi
+              volumeMounts:
+                - name: backups
+                  mountPath: /backup
+                - name: media
+                  mountPath: /media
+                  readOnly: true
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: catalog-backups
+            - name: media
+              persistentVolumeClaim:
+                claimName: catalog-media

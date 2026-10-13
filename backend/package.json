@@ -1,0 +1,23 @@
+{
+  "name": "nexora-product-catalog-backend",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node src/migrate.js",
+    "seed:legacy": "node src/seed-legacy-standalone.js",
+    "legacy": "node src/legacy-migrate.js",
+    "legacy:extract": "node scripts/extract-effective-legacy.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@sentry/node": "^8.47.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^2.0.2",
+    "pg": "^8.13.1"
+  }
+}

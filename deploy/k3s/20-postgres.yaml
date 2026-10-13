@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-postgres
+  namespace: product-catalog
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: catalog-postgres } }
+  template:
+    metadata: { labels: { app: catalog-postgres } }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          envFrom:
+            - secretRef: { name: catalog-postgres-secret }
+          ports: [{ containerPort: 5432 }]
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql/data }]
+          readinessProbe:
+            exec: { command: ["sh","-c","pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"] }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: catalog-postgres } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: catalog-postgres, namespace: product-catalog }
+spec:
+  selector: { app: catalog-postgres }
+  ports: [{ port: 5432, targetPort: 5432 }]

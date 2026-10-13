@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { many, one, query } from '../db.js';
+
+const router=Router();
+const allowed=new Set(['origin','sale_status','stock_display_mode','tank_publish_status']);
+const checkKey=k=>{if(!allowed.has(k)){const e=new Error('Unsupported lookup field');e.status=400;throw e}return k};
+
+router.get('/:fieldKey',async(req,res,next)=>{try{const k=checkKey(req.params.fieldKey);const items=await many(`SELECT option_id,field_key,value,label,sort_order,system_locked FROM catalog_lookup_option WHERE field_key=$1 ORDER BY sort_order,lower(label)`,[k]);res.json({items})}catch(e){next(e)}});
+router.post('/:fieldKey',async(req,res,next)=>{try{const k=checkKey(req.params.fieldKey);const value=String(req.body?.value||req.body?.label||'').trim();const label=String(req.body?.label||value).trim();if(!value||!label){const e=new Error('value and label are required');e.status=400;throw e}const row=await one(`INSERT INTO catalog_lookup_option(field_key,value,label,sort_order) VALUES($1,$2,$3,COALESCE((SELECT max(sort_order)+1 FROM catalog_lookup_option WHERE field_key=$1),0)) RETURNING *`,[k,value,label]);res.status(201).json(row)}catch(e){if(e.code==='23505'){e.status=409;e.message='Option already exists'}next(e)}});
+router.put('/:fieldKey/:id',async(req,res,next)=>{try{const k=checkKey(req.params.fieldKey);const current=await one(`SELECT * FROM catalog_lookup_option WHERE option_id=$1 AND field_key=$2`,[req.params.id,k]);if(!current){const e=new Error('Option not found');e.status=404;throw e}const value=current.system_locked?current.value:String(req.body?.value??current.value).trim();const label=String(req.body?.label??current.label).trim();const sort=Number(req.body?.sort_order??current.sort_order);if(!value||!label){const e=new Error('value and label are required');e.status=400;throw e}const row=await one(`UPDATE catalog_lookup_option SET value=$1,label=$2,sort_order=$3,updated_at=now() WHERE option_id=$4 RETURNING *`,[value,label,sort,req.params.id]);res.json(row)}catch(e){next(e)}});
+router.delete('/:fieldKey/:id',async(req,res,next)=>{try{const k=checkKey(req.params.fieldKey);const current=await one(`SELECT * FROM catalog_lookup_option WHERE option_id=$1 AND field_key=$2`,[req.params.id,k]);if(!current){const e=new Error('Option not found');e.status=404;throw e}if(current.system_locked){const e=new Error('Technical system option cannot be deleted');e.status=409;throw e}await query(`DELETE FROM catalog_lookup_option WHERE option_id=$1`,[req.params.id]);res.json({deleted:true,option_id:req.params.id})}catch(e){next(e)}});
+
+export default router;

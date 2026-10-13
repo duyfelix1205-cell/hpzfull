@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "product_id": "PRD-DEMO-001",
+      "name": "Cá Cầu Vồng Bleheri",
+      "sale_status": "ACTIVE",
+      "available_qty": 42,
+      "list_price": 150000,
+      "combo_prices": {"3":145000,"5":136000,"10":127000},
+      "product_code": "DEMO001",
+      "inventory_updated_at": "2026-09-16T22:00:00+07:00",
+      "updated_at": "2026-09-16T22:00:00+07:00"
+    },
+    {
+      "product_id": "PRD-DEMO-002",
+      "name": "Cá Thần Tiên Altum Peru",
+      "sale_status": "ACTIVE",
+      "available_qty": 0,
+      "list_price": 320000,
+      "inventory_updated_at": "2026-09-16T22:00:00+07:00",
+      "updated_at": "2026-09-16T22:00:00+07:00"
+    }
+  ]
+}

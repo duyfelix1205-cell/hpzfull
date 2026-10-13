@@ -1,0 +1,337 @@
+.aquaquest-app{
+  --aq-cream:#fff1c8;--aq-cream-2:#f7df9b;--aq-brown:#6f4727;--aq-brown-2:#9a6737;
+  --aq-green:#7aa844;--aq-green-2:#a9cd68;--aq-water:#2d99a1;--aq-water-2:#63c5bf;--aq-red:#c95132;
+}
+.aquaquest-app .hpz-main{padding:0 0 118px}
+.aq-shell{width:min(1100px,100%);margin:0 auto;padding:18px 18px 0;box-sizing:border-box;font-family:"Trebuchet MS","Segoe UI",sans-serif}
+.aq-topbar,.aq-world-banner,.aq-panel,.aq-fishing-controls,.aq-dock,.aq-login-card{
+  background:linear-gradient(180deg,#fff4cf,#f4d992);color:#55371f;border:3px solid #7b5431;border-radius:22px;
+  box-shadow:0 5px 0 #5f3d22,0 14px 34px rgba(0,0,0,.2);
+}
+.aq-topbar{display:grid;grid-template-columns:1.8fr repeat(3,1fr);gap:10px;padding:12px;align-items:center;position:sticky;top:76px;z-index:40}
+.aq-farm-name,.aq-resource,.aq-weather{display:flex;align-items:center;gap:10px;min-width:0;background:rgba(255,255,255,.45);border:2px solid rgba(112,72,38,.35);border-radius:16px;padding:9px 12px}
+.aq-avatar{width:44px;height:44px;display:grid;place-items:center;background:#e8bc68;border:2px solid #7b5431;border-radius:50%;font-size:23px}
+.aq-farm-name div,.aq-resource div,.aq-weather div{min-width:0}.aq-farm-name b,.aq-resource b,.aq-weather b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aq-farm-name small,.aq-resource small,.aq-weather small{display:block;font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:.05em}
+.aq-resource>span,.aq-weather>span{font-size:24px}
+.aq-world-banner{margin:16px 0;display:flex;justify-content:space-between;gap:16px;padding:12px 16px}
+.aq-world-main,.aq-festival{display:flex;align-items:center;gap:12px}.aq-world-main>span,.aq-festival>span{font-size:30px}.aq-world-main b,.aq-festival b{display:block}.aq-world-main small,.aq-festival small{display:block;opacity:.72;margin-top:2px}
+.aq-game-stage{min-height:640px}
+.aq-scene{position:relative;overflow:hidden;border:4px solid #7b5431;border-radius:28px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.22),0 12px 40px rgba(0,0,0,.24)}
+.aq-farm-scene{height:650px;background:
+ linear-gradient(90deg,transparent 49%,rgba(80,120,38,.16) 50%,transparent 51%) 0 0/48px 48px,
+ linear-gradient(transparent 49%,rgba(80,120,38,.14) 50%,transparent 51%) 0 0/48px 48px,
+ #91c94d}
+.aq-farm-scene:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 20%,rgba(255,255,255,.18),transparent 24%),linear-gradient(180deg,rgba(255,232,157,.14),transparent 35%)}
+.aq-pixel-cloud{position:absolute;font-size:52px;opacity:.75;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.12))}.aq-pixel-cloud.c1{left:14%;top:5%}.aq-pixel-cloud.c2{left:48%;top:12%;font-size:40px}
+.aq-house{position:absolute;left:7%;top:10%;text-align:center}.aq-house span{font-size:110px;filter:drop-shadow(0 8px 0 rgba(72,52,29,.22))}.aq-house small{display:block;background:#fff1c8;border:2px solid #7b5431;padding:6px 10px;border-radius:12px;font-weight:800}
+.aq-field{position:absolute;right:8%;top:17%;width:40%;height:45%;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:18px;background:#9c6a3d;border:7px solid #6e482c;border-radius:18px;box-shadow:inset 0 0 0 3px #be8750}
+.aq-crop{display:grid;place-items:center;font-size:38px;background:#7a4d2c;border-radius:40%;animation:aq-bob 2.6s infinite ease-in-out}.aq-crop.crop-1{animation-delay:.3s}.aq-crop.crop-2{animation-delay:.7s}
+.aq-chicken-yard{position:absolute;right:7%;bottom:7%;width:32%;height:21%;display:flex;align-items:center;justify-content:center;gap:12px;background:#d6b570;border:6px solid #754d2e;border-radius:18px;font-size:40px}.aq-chicken-yard small{position:absolute;bottom:8px;font-weight:900}
+.aq-river{position:absolute;left:0;bottom:0;width:34%;height:46%;background:linear-gradient(135deg,#2c909a,#42b9b0);border-right:8px solid #b07743}
+.aq-water-lines,.aq-fish-river:after{position:absolute;inset:0;content:"";background:repeating-radial-gradient(ellipse at 20% 30%,rgba(255,255,255,.16) 0 2px,transparent 3px 18px);opacity:.7;animation:aq-water 9s linear infinite}
+.aq-river-fish{position:absolute;font-size:28px;opacity:.75;animation:aq-swim-river 8s linear infinite}.aq-river-fish.f1{top:35%;left:10%}.aq-river-fish.f2{top:65%;left:55%;animation-delay:-3s}.aq-heron{position:absolute;right:8%;top:12%;font-size:45px}
+.aq-player{position:absolute;left:43%;bottom:18%;font-size:72px;filter:drop-shadow(0 7px 0 rgba(0,0,0,.2));animation:aq-bob 2s infinite}
+.aq-farm-actions{position:absolute;left:4%;right:4%;bottom:3%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.aq-farm-actions button,.aq-fish-list button,.aq-shop-grid button,.aq-dock button{
+  border:3px solid #795130;background:linear-gradient(#fff6d5,#efd18a);color:#5a3a22;border-radius:16px;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #624022
+}
+.aq-farm-actions button{padding:12px;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"i b" "i s";text-align:left;gap:0 8px}.aq-farm-actions button>span{grid-area:i;font-size:30px}.aq-farm-actions button>b{grid-area:b}.aq-farm-actions button>small{grid-area:s;opacity:.7}
+.aq-farm-actions button:disabled,.aq-dock button:disabled,.aq-shop-grid button:disabled,.aq-fish-list button:disabled{opacity:.55;cursor:not-allowed}
+
+.aq-fishing-wrap{display:grid;gap:14px}.aq-fishing-scene{height:650px;display:grid;grid-template-columns:56% 44%}
+.aq-fish-river{position:relative;background:linear-gradient(135deg,#197c89,#2fa5a3);overflow:hidden}.aq-riverbank{position:relative;background:
+ radial-gradient(circle at 30% 35%,#e9e27f 0 3px,transparent 4px),
+ linear-gradient(135deg,#93cb4e,#74b33e)}
+.aq-riverbank:before{content:"";position:absolute;left:-18px;top:0;bottom:0;width:34px;background:repeating-linear-gradient(180deg,#9b693d 0 12px,#c18b4d 12px 23px);border-radius:50%}
+.aq-fish-river .shadow{position:absolute;width:58px;height:18px;border-radius:50%;background:rgba(1,45,55,.6);filter:blur(1px);animation:aq-shadow 7s linear infinite}.aq-fish-river .s1{left:20%;top:35%}.aq-fish-river .s2{left:64%;top:56%;animation-delay:-2s}.aq-fish-river .s3{left:32%;top:75%;animation-delay:-5s}
+.aq-bird{position:absolute;left:52%;top:18%;font-size:54px}.aq-fisher{position:absolute;left:56%;top:48%;font-size:76px}.aq-reeds{position:absolute;left:6%;bottom:12%;font-size:55px}.aq-flowers{position:absolute;right:8%;bottom:18%;font-size:52px}
+.aq-rod{position:absolute;left:52%;top:43%;width:260px;height:4px;background:#6b3d1d;transform:rotate(198deg);transform-origin:right;border-radius:99px}.aq-rod:after{content:"";position:absolute;left:-185px;top:0;width:190px;height:2px;background:#f7f0ce;transform:rotate(-22deg);transform-origin:right}
+.aq-bobber{position:absolute;left:36%;top:55%;font-size:23px;z-index:3;transition:.2s}.aq-fishing-scene.bite .aq-bobber{animation:aq-bite .38s infinite}.aq-fishing-scene.reeling .aq-bobber{left:68%;top:42%;transition:.5s}
+.aq-fishing-status{position:absolute;left:4%;right:4%;bottom:4%;background:rgba(255,247,214,.92);border:3px solid #78502e;border-radius:16px;padding:14px;text-align:center;color:#5d3e24;font-size:18px;font-weight:900;z-index:5}
+.aq-fishing-controls{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:12px 15px;align-items:center}.aq-fishing-controls>div b,.aq-fishing-controls>div small{display:block}.aq-fishing-controls>div small{opacity:.7}
+
+.aq-room-wrap{display:grid;gap:14px}.aq-room{height:590px;background:linear-gradient(#f5deb1 0 72%,#c58a52 72%);position:relative}
+.aq-room:before{content:"";position:absolute;left:0;right:0;bottom:0;height:28%;background:repeating-linear-gradient(90deg,#a66c42 0 72px,#b77d4a 72px 76px);opacity:.65}
+.aq-room-title{position:absolute;left:50%;top:4%;transform:translateX(-50%);background:#fff0c5;border:3px solid #755034;border-radius:15px;padding:8px 18px;font-weight:1000;color:#5a381f;letter-spacing:.05em}
+.aq-window{position:absolute;left:7%;top:15%;width:120px;height:105px;display:grid;place-items:center;background:#bfe8f3;border:8px solid #8b5d34;box-shadow:inset 0 0 0 4px #fff4d2;font-size:45px}
+.aq-shelf{position:absolute;right:6%;top:18%;background:#a66d3f;border:5px solid #704628;padding:10px;border-radius:7px;font-size:28px}
+.aq-tank{position:absolute;left:22%;right:18%;top:20%;height:52%;background:linear-gradient(180deg,rgba(118,221,226,.78),rgba(20,126,151,.86));border:12px solid #684629;border-radius:16px;box-shadow:inset 0 0 24px rgba(255,255,255,.3),0 14px 0 rgba(92,56,29,.28);overflow:hidden}
+.aq-tank:after{content:"";position:absolute;left:0;right:0;bottom:0;height:13%;background:linear-gradient(#aa7b4b,#6d4a32);border-top:3px solid rgba(255,255,255,.25)}
+.aq-tank-water{position:absolute;inset:0;background:repeating-radial-gradient(ellipse at 20% 40%,rgba(255,255,255,.14) 0 2px,transparent 3px 22px);animation:aq-water 10s linear infinite}
+.aq-tank-light{position:absolute;left:12%;right:12%;top:-3px;height:12px;background:#fffbd5;box-shadow:0 8px 24px #fff3a7;z-index:2}
+.aq-tank-plant{position:absolute;bottom:9%;font-size:60px;z-index:2}.aq-tank-plant.p1{left:4%}.aq-tank-plant.p2{right:7%}.aq-tank-rock{position:absolute;left:43%;bottom:8%;font-size:58px;z-index:2}
+.aq-swim{position:absolute;z-index:3;font-size:34px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));animation:aq-tank-swim 8s ease-in-out infinite}.aq-swim.has-fish2d{width:62px;height:32px;font-size:0}.aq-fish2d-sprite{display:block;width:100%;height:100%;background-repeat:no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.22))}.aq-fish-thumb .aq-fish2d-sprite{width:46px;height:24px}.aq-swim.fish-0{left:15%;top:30%}.aq-swim.fish-1{left:55%;top:45%;animation-delay:-2s}.aq-swim.fish-2{left:35%;top:60%;animation-delay:-4s}.aq-swim.fish-3{left:70%;top:25%;animation-delay:-1s}.aq-swim.fish-4{left:48%;top:18%;animation-delay:-5s}
+.aq-empty-tank{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.86);font-weight:900;z-index:4}
+.aq-aquarium-stats{position:absolute;left:22%;right:18%;top:75%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.aq-aquarium-stats span{background:#fff0c5;border:2px solid #79502f;border-radius:10px;padding:7px 8px;text-align:center;color:#5a3a22;font-size:12px}
+.aq-grandma{position:absolute;right:4%;bottom:5%;font-size:70px}.aq-grandma small{display:block;font-size:11px;background:#fff0c5;border:2px solid #79502f;border-radius:10px;padding:5px;color:#5a3a22}
+.aq-room-actions{display:flex;gap:10px;flex-wrap:wrap}
+.aq-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.aq-panel{padding:16px}.aq-panel h3{margin:0 0 10px}.aq-panel h3 small{float:right;font-size:11px;opacity:.65}.aq-muted{opacity:.72}
+.aq-fish-list{display:grid;gap:8px}.aq-fish-list article{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.42);border:2px solid rgba(111,71,39,.25);border-radius:14px;padding:8px}.aq-fish-thumb{width:52px;height:42px;border-radius:10px;display:grid;place-items:center;background:#bfe1db;overflow:hidden;font-size:25px}.aq-fish-thumb img{width:100%;height:100%;object-fit:cover}.aq-fish-list b,.aq-fish-list small{display:block}.aq-fish-list small{opacity:.7;font-size:11px}.aq-fish-list button,.aq-shop-grid button{padding:7px 9px;border-width:2px;box-shadow:0 2px 0 #624022}
+
+.aq-market{display:grid;gap:14px}.aq-market-scene{height:350px;position:relative;overflow:hidden;border:4px solid #7b5431;border-radius:26px;background:linear-gradient(#9fd463 0 58%,#c69760 58%);box-shadow:inset 0 0 0 4px rgba(255,255,255,.18)}
+.aq-market-scene:after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:repeating-linear-gradient(90deg,rgba(132,89,48,.18) 0 30px,transparent 30px 60px)}
+.aq-stall{position:absolute;top:17%;width:24%;height:45%;display:grid;place-items:center;align-content:center;gap:8px;font-size:42px;background:#f7d89a;border:6px solid #754a29;border-radius:16px;z-index:2}.aq-stall b{font-size:14px}.aq-stall.vegetables{left:8%}.aq-stall.fish{left:38%}.aq-stall.npc{right:8%}.aq-market-crowd{position:absolute;left:20%;right:20%;bottom:5%;text-align:center;font-size:42px;z-index:3}
+.aq-market-sell{display:flex;align-items:center;justify-content:space-between;gap:14px}.aq-market-sell h3,.aq-market-sell p{margin:0}
+.aq-shop-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.aq-shop-grid article{display:grid;gap:6px;background:rgba(255,255,255,.4);border:2px solid rgba(111,71,39,.28);border-radius:14px;padding:9px}.aq-shop-grid img,.aq-shop-fallback{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:#c3e7e3}.aq-shop-fallback{display:grid;place-items:center;font-size:44px}.aq-shop-grid b{font-size:13px}.aq-shop-grid small{font-size:10px;opacity:.72;min-height:28px}
+
+.aq-missions{display:grid;gap:14px}.aq-daily-card,.aq-chest{display:flex;align-items:center;justify-content:space-between;gap:14px}.aq-daily-card>div{display:flex;gap:12px;align-items:center}.aq-daily-card h2,.aq-daily-card p{margin:0}.aq-daily-card strong{font-size:32px}.aq-big-icon{font-size:45px}
+.aq-mission-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aq-mission-list article{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;background:#fff0c5;border:3px solid #7a5230;border-radius:18px;padding:13px;color:#58391f;box-shadow:0 4px 0 #614022}.aq-mission-list article.done{background:#e6f2bb}.aq-mission-list>article>span{font-size:30px}.aq-mission-list small{display:block;font-size:10px;opacity:.68}.aq-mission-list em{font-style:normal;font-size:22px}.aq-progress{height:8px;background:rgba(97,64,34,.18);border-radius:99px;overflow:hidden;margin:6px 0}.aq-progress i{display:block;height:100%;background:#7da54c;border-radius:99px}
+.aq-chest>span{font-size:50px}.aq-chest>div{flex:1}.aq-chest b,.aq-chest small{display:block}.aq-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.aq-kpi-row span{background:rgba(255,255,255,.4);border:2px solid rgba(111,71,39,.25);border-radius:12px;padding:10px;text-align:center}.aq-kpi-row b{display:block;font-size:20px}
+
+.aq-toast{position:fixed;z-index:1500;left:50%;top:88px;transform:translateX(-50%);max-width:min(760px,90vw);border:3px solid #7a5230;border-radius:16px;background:#fff3c8;color:#58391f;padding:11px 42px 11px 16px;font:inherit;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.3);cursor:pointer}.aq-toast span{position:absolute;right:12px;font-size:20px}
+.aq-dock{position:fixed;z-index:1000;left:50%;transform:translateX(-50%);bottom:12px;width:min(820px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:8px}.aq-dock button{padding:8px 5px;display:grid;gap:2px;place-items:center}.aq-dock button span{font-size:27px}.aq-dock button b{font-size:11px}.aq-dock button.active{background:linear-gradient(#c7e893,#98c65b);transform:translateY(-4px)}
+.aq-login-card{max-width:560px;margin:70px auto;padding:30px;text-align:center}.aq-login-card>span{font-size:70px}.aq-login-card h1{font-size:34px;margin:8px 0}.aq-login-card p{line-height:1.6}
+
+@keyframes aq-bob{50%{transform:translateY(-5px)}}@keyframes aq-water{to{transform:translateX(28px)}}@keyframes aq-swim-river{0%{transform:translateX(-70px)}50%{transform:translateX(100px)}100%{transform:translateX(-70px) scaleX(-1)}}@keyframes aq-shadow{50%{transform:translateX(90px) scale(.75)}}@keyframes aq-bite{50%{transform:translateY(12px) rotate(12deg)}}@keyframes aq-tank-swim{0%,100%{transform:translateX(0) scaleX(1)}48%{transform:translateX(90px) scaleX(1)}52%{transform:translateX(90px) scaleX(-1)}96%{transform:translateX(0) scaleX(-1)}}
+
+@media(max-width:900px){
+ .aq-topbar{grid-template-columns:1.5fr 1fr 1fr}.aq-weather{grid-column:1/-1}.aq-world-banner{flex-direction:column}.aq-farm-scene,.aq-fishing-scene,.aq-room{height:600px}.aq-shop-grid{grid-template-columns:repeat(2,1fr)}.aq-two-cols{grid-template-columns:1fr}.aq-mission-list{grid-template-columns:1fr}.aq-market-sell{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:620px){
+ .aquaquest-app .hpz-main{padding-bottom:105px}.aq-shell{padding:10px 8px 0}.aq-topbar{position:relative;top:auto;grid-template-columns:1fr 1fr}.aq-farm-name{grid-column:1/-1}.aq-topbar,.aq-world-banner{border-width:2px;border-radius:16px}.aq-world-main small,.aq-festival small{font-size:10px}
+ .aq-game-stage{min-height:560px}.aq-farm-scene{height:560px}.aq-house{left:4%;top:9%}.aq-house span{font-size:80px}.aq-field{right:3%;top:20%;width:48%;height:38%;padding:9px;gap:5px}.aq-crop{font-size:25px}.aq-chicken-yard{right:4%;bottom:21%;width:38%;height:17%;font-size:27px}.aq-river{width:38%;height:48%}.aq-player{left:40%;bottom:31%;font-size:55px}.aq-farm-actions{grid-template-columns:1fr;bottom:2%;gap:5px}.aq-farm-actions button{padding:7px 9px}.aq-farm-actions button>span{font-size:22px}
+ .aq-fishing-scene{height:560px;grid-template-columns:58% 42%}.aq-fisher{left:40%;top:48%;font-size:54px}.aq-rod{left:34%;width:200px}.aq-bird{font-size:38px}.aq-fishing-controls{grid-template-columns:1fr 1fr}.aq-fishing-controls>div{grid-column:1/-1}
+ .aq-room{height:530px}.aq-swim.has-fish2d{width:52px;height:28px}.aq-window{left:3%;width:78px;height:72px;font-size:30px}.aq-shelf{display:none}.aq-tank{left:8%;right:8%;top:23%;height:49%;border-width:8px}.aq-aquarium-stats{left:8%;right:8%;top:74%;grid-template-columns:1fr 1fr}.aq-grandma{right:2%;bottom:3%;font-size:45px}.aq-grandma small{display:none}.aq-room-actions .hpz-btn{flex:1 1 45%}
+ .aq-market-scene{height:290px}.aq-stall{top:14%;width:27%;height:43%;font-size:30px}.aq-stall.vegetables{left:3%}.aq-stall.fish{left:36.5%}.aq-stall.npc{right:3%}.aq-market-crowd{font-size:30px}
+ .aq-shop-grid{grid-template-columns:1fr 1fr}.aq-kpi-row{grid-template-columns:1fr 1fr}.aq-dock{bottom:6px}.aq-dock button span{font-size:22px}.aq-dock button b{font-size:9px}
+}
+
+.aq-leaderboard{display:grid;gap:6px;margin-top:12px}.aq-leaderboard>div{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;padding:9px 11px;border:2px solid rgba(111,71,39,.22);border-radius:12px;background:rgba(255,255,255,.34)}.aq-leaderboard>div.me{background:#e6f2bb;border-color:#789f4a}.aq-leaderboard strong{font-size:18px}.aq-leaderboard span{font-weight:800}.aq-leaderboard b{font-size:11px}@media(max-width:620px){.aq-leaderboard>div{grid-template-columns:46px 1fr}.aq-leaderboard b{grid-column:2}}
+
+.aq-weather-source{margin-top:4px!important;font-size:9px!important}.aq-weather-source a{color:#6b4b2d!important;text-decoration:underline!important}
+
+
+/* AquaQuest R2 — fixed viewport + pannable wide world + character choreography */
+.aq-farm-wrap{display:grid;gap:14px}
+.aq-scene-frame{
+  position:relative;overflow:hidden;border:4px solid #7b5431;border-radius:28px;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.22),0 12px 40px rgba(0,0,0,.24);
+  background:#315c3c;isolation:isolate
+}
+.aq-scene-pan{
+  width:100%;height:100%;overflow:auto;scrollbar-width:none;-ms-overflow-style:none;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;
+  cursor:grab;user-select:none;-webkit-user-select:none;outline:none
+}
+.aq-scene-pan::-webkit-scrollbar{display:none}
+.aq-scene-pan.is-dragging{cursor:grabbing}
+.aq-scene-pan:focus-visible{box-shadow:inset 0 0 0 3px rgba(255,240,174,.9)}
+.aq-scene-pan>.aq-scene,.aq-scene-pan>.aq-market-scene{border:0;border-radius:0;box-shadow:none}
+.aq-world-canvas{width:1040px!important;min-width:1040px!important;max-width:none!important;box-sizing:border-box}
+.aq-farm-frame,.aq-fishing-frame{height:650px}.aq-room-frame{height:590px}.aq-market-frame{height:350px}
+.aq-pan-hint{
+  display:none;position:absolute;right:10px;bottom:10px;z-index:20;padding:6px 10px;border-radius:999px;
+  border:2px solid rgba(90,58,34,.72);background:rgba(255,243,200,.92);color:#5a3a22;font-size:10px;font-weight:900;
+  box-shadow:0 3px 0 rgba(75,45,24,.45);pointer-events:none
+}
+.aq-farm-actions{position:static;left:auto;right:auto;bottom:auto;grid-template-columns:repeat(3,minmax(0,1fr))}
+.aq-farm-actions button{min-height:62px}
+
+/* Living farm */
+.aq-pixel-cloud.c1{animation:aq-cloud-drift-1 13s ease-in-out infinite alternate}
+.aq-pixel-cloud.c2{animation:aq-cloud-drift-2 16s ease-in-out infinite alternate}
+.aq-house span{display:block;animation:aq-house-breathe 4.8s ease-in-out infinite}
+.aq-neighbor{position:absolute;left:25%;top:38%;display:grid;place-items:center;z-index:3;animation:aq-npc-idle 2.6s ease-in-out infinite}
+.aq-neighbor span{font-size:62px;filter:drop-shadow(0 6px 0 rgba(0,0,0,.14))}
+.aq-neighbor small{margin-top:-5px;background:#fff1c8;border:2px solid #7b5431;border-radius:10px;padding:4px 7px;color:#5a3a22;font-weight:900}
+.aq-chicken-yard .hen{display:inline-block;transform-origin:50% 100%;animation:aq-hen-wander 2.1s ease-in-out infinite}
+.aq-chicken-yard .h2{animation-delay:-.7s}.aq-chicken-yard .h3{animation-delay:-1.4s}
+.aq-heron{animation:aq-heron-look 3.4s ease-in-out infinite}
+.aq-player-path,.aq-room-player{
+  position:absolute;z-index:12;width:82px;height:92px;margin:-46px 0 0 -41px;
+  transition:left .62s cubic-bezier(.2,.8,.2,1),top .62s cubic-bezier(.2,.8,.2,1),bottom .45s ease;
+  pointer-events:none;filter:drop-shadow(0 6px 0 rgba(0,0,0,.12))
+}
+.aq-player-body{position:absolute;left:8px;top:0;font-size:68px;line-height:1;transform-origin:50% 100%;animation:aq-player-idle 1.8s ease-in-out infinite}
+.aq-player-shadow{position:absolute;left:15px;bottom:1px;width:52px;height:14px;background:rgba(35,56,25,.28);border-radius:50%;filter:blur(2px)}
+.aq-player-tool{position:absolute;right:-8px;top:29px;font-size:29px;z-index:2;transform-origin:0 80%;animation:aq-tool-bob .45s ease-in-out infinite alternate}
+.aq-player-path.walking .aq-player-body,.aq-room-player.walking .aq-player-body,.aq-room-player.returning .aq-player-body{animation:aq-player-walk .24s ease-in-out infinite}
+.aq-player-path.walking .aq-player-shadow,.aq-room-player.walking .aq-player-shadow,.aq-room-player.returning .aq-player-shadow{animation:aq-shadow-step .24s ease-in-out infinite}
+.aq-player-path.harvesting .aq-player-body{animation:aq-harvest-body .52s ease-in-out 2}
+.aq-player-path.feeding-chickens .aq-player-body{animation:aq-feed-body .44s ease-in-out 3}
+.aq-player-path.chatting .aq-player-body{animation:aq-chat-body .58s ease-in-out 2}
+.aq-harvest-fx{position:absolute;inset:0;pointer-events:none;z-index:4}
+.aq-harvest-fx i{position:absolute;left:50%;top:46%;font-style:normal;font-size:28px;opacity:0}
+.aq-farm-scene.is-harvesting .aq-crop{animation:aq-crop-harvest .5s ease-in-out 2}
+.aq-farm-scene.is-harvesting .aq-harvest-fx i{animation:aq-harvest-pop .9s ease-out forwards}
+.aq-farm-scene.is-harvesting .aq-harvest-fx i:nth-child(2){animation-delay:.08s}.aq-farm-scene.is-harvesting .aq-harvest-fx i:nth-child(3){animation-delay:.16s}.aq-farm-scene.is-harvesting .aq-harvest-fx i:nth-child(4){animation-delay:.24s}
+.aq-feed-specks{position:absolute;inset:0;pointer-events:none;z-index:5}
+.aq-feed-specks i{position:absolute;left:48%;top:30%;width:6px;height:6px;border-radius:50%;background:#f0cf61;opacity:0;box-shadow:10px 4px #e7bd49,-10px 8px #f6df83}
+.aq-farm-scene.is-feeding-chickens .aq-feed-specks i{animation:aq-feed-scatter .72s ease-out forwards}
+.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(2){animation-delay:.05s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(3){animation-delay:.1s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(4){animation-delay:.15s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(5){animation-delay:.2s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(6){animation-delay:.25s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(7){animation-delay:.3s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(8){animation-delay:.35s}.aq-farm-scene.is-feeding-chickens .aq-feed-specks i:nth-child(9){animation-delay:.4s}
+.aq-farm-scene.is-feeding-chickens .hen{animation:aq-hen-peck .3s ease-in-out infinite}
+.aq-farm-scene.is-chatting .aq-neighbor{animation:aq-chat-npc .55s ease-in-out 2}
+
+/* Fishing feels like a real action instead of a timer */
+.aq-fishing-scene.idle .aq-bobber{opacity:0}
+.aq-fishing-scene.casting .aq-fisher{animation:aq-cast-body .82s cubic-bezier(.2,.8,.2,1)}
+.aq-fishing-scene.casting .aq-rod{animation:aq-cast-rod .82s cubic-bezier(.2,.8,.2,1)}
+.aq-fishing-scene.casting .aq-bobber{opacity:1;animation:aq-cast-bobber .82s cubic-bezier(.15,.7,.2,1) forwards}
+.aq-fishing-scene.casting .aq-splash{animation:aq-splash .55s .55s ease-out both}
+.aq-fishing-scene.waiting .aq-bobber{opacity:1;animation:aq-float-bobber 1s ease-in-out infinite}
+.aq-fishing-scene.bite .aq-fisher{animation:aq-fisher-alert .3s ease-in-out infinite alternate}
+.aq-fishing-scene.bite .aq-fishing-alert{animation:aq-alert-pop .38s ease-in-out infinite alternate}
+.aq-fishing-scene.reeling .aq-fisher{animation:aq-reel-body .35s ease-in-out infinite alternate}
+.aq-fishing-scene.reeling .aq-rod{animation:aq-reel-rod .35s ease-in-out infinite alternate}
+.aq-fishing-scene.caught .aq-fisher{animation:aq-caught-pose .85s ease-in-out}
+.aq-splash,.aq-fishing-alert,.aq-caught-fish{position:absolute;z-index:7;opacity:0;pointer-events:none}
+.aq-splash{left:34%;top:51%;font-size:42px}.aq-fishing-alert{left:67%;top:35%;font-size:64px;font-weight:1000;color:#fff5b8;text-shadow:0 4px 0 #8a4a25}.aq-caught-fish{left:50%;top:50%;font-size:46px}
+.aq-fishing-scene.caught .aq-caught-fish{animation:aq-caught-fish 1s cubic-bezier(.15,.8,.2,1) both}
+.aq-fishing-scene.caught .aq-bobber{opacity:0}
+
+/* Aquarium choreography */
+.aq-room-player{left:12%;bottom:8%;top:auto;margin:0}
+.aq-room-player.walking,.aq-room-player.feeding,.aq-room-player.cleaning{left:72%;bottom:15%}
+.aq-room-player.returning{left:12%;bottom:8%}
+.aq-room-player.feeding .aq-player-body{animation:aq-feed-body .42s ease-in-out 4}
+.aq-room-player.cleaning .aq-player-body{animation:aq-clean-body .48s ease-in-out 4}
+.aq-aquarium-feed-fx{position:absolute;left:58%;top:0;width:90px;height:52%;z-index:8;pointer-events:none}
+.aq-aquarium-feed-fx i{position:absolute;left:50%;top:0;width:5px;height:5px;border-radius:50%;background:#f3d36a;box-shadow:8px 3px #e6b94e;animation:aq-food-fall 1.05s ease-in infinite}
+.aq-aquarium-feed-fx i:nth-child(2){left:20%;animation-delay:-.15s}.aq-aquarium-feed-fx i:nth-child(3){left:80%;animation-delay:-.3s}.aq-aquarium-feed-fx i:nth-child(4){left:35%;animation-delay:-.45s}.aq-aquarium-feed-fx i:nth-child(5){left:66%;animation-delay:-.6s}.aq-aquarium-feed-fx i:nth-child(6){left:10%;animation-delay:-.75s}.aq-aquarium-feed-fx i:nth-child(7){left:90%;animation-delay:-.9s}.aq-aquarium-feed-fx i:nth-child(8){left:42%;animation-delay:-.25s}.aq-aquarium-feed-fx i:nth-child(9){left:58%;animation-delay:-.55s}.aq-aquarium-feed-fx i:nth-child(10){left:27%;animation-delay:-.8s}.aq-aquarium-feed-fx i:nth-child(11){left:74%;animation-delay:-.4s}.aq-aquarium-feed-fx i:nth-child(12){left:51%;animation-delay:-.7s}
+.aq-tank.feeding .aq-swim{animation-duration:1.5s;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2)) saturate(1.2)}
+.aq-tank.cleaning{animation:aq-tank-shine .75s ease-in-out 2}
+.aq-tank.cleaning:before{content:"";position:absolute;z-index:9;top:-25%;bottom:-25%;width:24%;left:-35%;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:aq-clean-swipe 1.2s ease-in-out 2}
+
+/* Market motion */
+.aq-market-crowd{animation:aq-crowd-bob 1.8s ease-in-out infinite}
+.aq-stall{animation:aq-stall-breathe 4s ease-in-out infinite}.aq-stall.fish{animation-delay:-1.2s}.aq-stall.npc{animation-delay:-2.2s}
+.aq-market-cart{position:absolute;left:4%;bottom:5%;z-index:5;font-size:42px;opacity:0;filter:drop-shadow(0 4px 0 rgba(0,0,0,.16))}
+.aq-market-scene.is-carting .aq-market-cart{animation:aq-cart-cross 1.25s ease-in-out both}
+
+/* Keyframes */
+@keyframes aq-player-idle{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes aq-player-walk{0%,100%{transform:translateY(0) rotate(-5deg) scaleY(1)}50%{transform:translateY(-8px) rotate(5deg) scaleY(.97)}}
+@keyframes aq-shadow-step{50%{transform:scaleX(.78);opacity:.55}}
+@keyframes aq-tool-bob{to{transform:rotate(13deg) translateY(-3px)}}
+@keyframes aq-harvest-body{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(12px) rotate(12deg) scaleY(.88)}70%{transform:translateY(-5px) rotate(-8deg)}}
+@keyframes aq-feed-body{0%,100%{transform:rotate(0) translateY(0)}45%{transform:rotate(-10deg) translateY(4px)}70%{transform:rotate(8deg) translateY(-3px)}}
+@keyframes aq-chat-body{0%,100%{transform:rotate(0) translateY(0)}50%{transform:rotate(-4deg) translateY(-5px) scale(1.04)}}
+@keyframes aq-crop-harvest{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.72) rotate(8deg)}}
+@keyframes aq-harvest-pop{0%{opacity:0;transform:translate(0,0) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(50px,-95px) rotate(25deg) scale(1.2)}}
+@keyframes aq-feed-scatter{0%{opacity:0;transform:translate(0,-10px)}20%{opacity:1}100%{opacity:0;transform:translate(calc((var(--n,1) - 4)*10px),58px) scale(.7)}}
+@keyframes aq-hen-wander{0%,100%{transform:translateX(-5px) rotate(-3deg)}50%{transform:translateX(7px) rotate(3deg)}}
+@keyframes aq-hen-peck{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(6px) rotate(12deg)}}
+@keyframes aq-chat-npc{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-4deg)}}
+@keyframes aq-npc-idle{50%{transform:translateY(-4px)}}
+@keyframes aq-cloud-drift-1{to{transform:translate(45px,8px)}}@keyframes aq-cloud-drift-2{to{transform:translate(-38px,5px)}}
+@keyframes aq-house-breathe{50%{transform:translateY(-3px) scale(1.015)}}@keyframes aq-heron-look{0%,100%{transform:rotate(0)}45%{transform:rotate(-5deg) translateY(2px)}60%{transform:rotate(4deg)}}
+@keyframes aq-cast-body{0%{transform:rotate(0)}35%{transform:rotate(10deg) translateX(6px)}70%{transform:rotate(-12deg) translateX(-5px)}100%{transform:rotate(0)}}
+@keyframes aq-cast-rod{0%{transform:rotate(185deg)}45%{transform:rotate(145deg)}100%{transform:rotate(198deg)}}
+@keyframes aq-cast-bobber{0%{transform:translate(330px,-150px) scale(.6);opacity:0}35%{opacity:1}72%{transform:translate(90px,-90px) scale(.9)}100%{transform:translate(0,0) scale(1);opacity:1}}
+@keyframes aq-splash{0%{opacity:0;transform:scale(.25)}35%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(1.7) translateY(-8px)}}
+@keyframes aq-float-bobber{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(6px) rotate(3deg)}}
+@keyframes aq-fisher-alert{to{transform:translateY(-5px) rotate(-4deg)}}@keyframes aq-alert-pop{to{transform:translateY(-8px) scale(1.12)}}
+@keyframes aq-reel-body{to{transform:translateX(8px) rotate(9deg)}}@keyframes aq-reel-rod{to{transform:rotate(224deg)}}@keyframes aq-caught-pose{50%{transform:translateY(-9px) rotate(-7deg) scale(1.05)}}
+@keyframes aq-caught-fish{0%{opacity:0;transform:translate(-160px,90px) rotate(-35deg) scale(.7)}35%{opacity:1}70%{transform:translate(120px,-120px) rotate(26deg) scale(1.2)}100%{opacity:0;transform:translate(180px,-55px) rotate(48deg) scale(.9)}}
+@keyframes aq-clean-body{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translateX(-8px) rotate(-8deg)}}
+@keyframes aq-food-fall{0%{transform:translateY(-4px) scale(.7);opacity:0}15%{opacity:1}100%{transform:translateY(155px) translateX(8px) scale(.45);opacity:0}}
+@keyframes aq-tank-shine{50%{filter:brightness(1.14) saturate(1.12)}}@keyframes aq-clean-swipe{to{left:120%}}
+@keyframes aq-crowd-bob{50%{transform:translateY(-4px)}}@keyframes aq-stall-breathe{50%{transform:translateY(-3px)}}@keyframes aq-cart-cross{0%{opacity:0;transform:translateX(-80px)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translateX(820px)}}
+
+@media(max-width:900px){
+ .aq-pan-hint{display:block}
+ .aq-world-canvas{width:1000px!important;min-width:1000px!important}
+ .aq-topbar{top:68px}
+}
+@media(max-width:620px){
+ .aquaquest-app .hpz-main{padding:0 0 96px}
+ .aq-shell{width:100%;padding:6px 6px 0}
+ .aq-topbar{
+   position:sticky;top:58px;z-index:850;grid-template-columns:minmax(118px,1.7fr) auto auto auto!important;
+   gap:4px;padding:6px;border-width:2px;border-radius:14px
+ }
+ .aq-farm-name{grid-column:auto!important}.aq-farm-name,.aq-resource,.aq-weather{gap:4px;padding:5px 6px;border-width:1px;border-radius:10px}
+ .aq-avatar{width:30px;height:30px;font-size:17px;border-width:1px}.aq-resource>span,.aq-weather>span{font-size:16px}
+ .aq-farm-name small,.aq-resource small,.aq-weather small{display:none}.aq-farm-name b{font-size:10px}.aq-resource b,.aq-weather b{font-size:9px}
+ .aq-world-banner{margin:7px 0 9px;padding:7px 9px;display:grid;grid-template-columns:1fr auto;gap:7px;border-width:2px;border-radius:14px}
+ .aq-world-main,.aq-festival{gap:6px}.aq-world-main>span,.aq-festival>span{font-size:21px}.aq-world-main b,.aq-festival b{font-size:10px}
+ .aq-world-main small:not(.aq-weather-source),.aq-festival small,.aq-weather-source{display:none!important}
+ .aq-game-stage{min-height:0}
+ .aq-scene-frame{border-width:3px;border-radius:18px}
+ .aq-world-canvas{width:960px!important;min-width:960px!important}
+ .aq-farm-frame,.aq-fishing-frame{height:min(58svh,540px);min-height:460px}
+ .aq-room-frame{height:min(56svh,515px);min-height:440px}.aq-market-frame{height:300px}
+ .aq-farm-scene,.aq-fishing-scene{height:640px!important}.aq-room{height:590px!important}.aq-market-scene{height:350px!important}
+ .aq-house{left:7%;top:10%}.aq-house span{font-size:110px}.aq-field{right:8%;top:17%;width:40%;height:45%;padding:18px;gap:10px}.aq-crop{font-size:38px}
+ .aq-chicken-yard{right:7%;bottom:7%;width:32%;height:21%;font-size:40px}.aq-river{width:34%;height:46%}
+ .aq-farm-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.aq-farm-actions button{padding:7px 6px;min-height:54px;border-width:2px}.aq-farm-actions button>span{font-size:20px}.aq-farm-actions button>b{font-size:10px}.aq-farm-actions button>small{font-size:8px}
+ .aq-fishing-scene{grid-template-columns:56% 44%!important}.aq-fisher{left:56%;top:48%;font-size:76px}.aq-rod{left:52%;top:43%;width:260px}.aq-bird{font-size:54px}
+ .aq-fishing-controls{grid-template-columns:1fr 1fr;padding:8px;gap:6px;border-width:2px;border-radius:14px}.aq-fishing-controls>div{grid-column:1/-1}.aq-fishing-controls .hpz-btn{min-height:38px;padding:8px 7px;font-size:10px}
+ .aq-window{left:7%;top:15%;width:120px;height:105px;font-size:45px}.aq-shelf{display:block;right:6%;top:18%}.aq-tank{left:22%;right:18%;top:20%;height:52%;border-width:12px}
+ .aq-aquarium-stats{left:22%;right:18%;top:75%;grid-template-columns:repeat(4,1fr)}.aq-grandma{right:4%;bottom:5%;font-size:70px}.aq-grandma small{display:block}
+ .aq-room-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.aq-room-actions .hpz-btn{width:100%;padding:8px 7px;font-size:10px}.aq-room-actions .hpz-btn:first-child{grid-column:1/-1}
+ .aq-market-scene{height:350px!important}.aq-stall{top:17%;width:24%;height:45%;font-size:42px}.aq-stall.vegetables{left:8%}.aq-stall.fish{left:38%}.aq-stall.npc{right:8%}.aq-market-crowd{font-size:42px}
+ .aq-shop-grid{grid-template-columns:repeat(2,minmax(150px,1fr));overflow-x:auto;scrollbar-width:none;padding-bottom:4px}.aq-shop-grid::-webkit-scrollbar{display:none}
+ .aq-two-cols{grid-template-columns:1fr}.aq-panel{padding:12px;border-width:2px;border-radius:16px}
+ .aq-kpi-row{grid-template-columns:1fr 1fr}
+ .aq-dock{left:6px;right:6px;transform:none;bottom:max(7px,env(safe-area-inset-bottom));width:auto;grid-template-columns:repeat(5,1fr);gap:4px;padding:6px;border-width:2px;border-radius:16px}
+ .aq-dock button{padding:6px 3px;border-width:2px}.aq-dock button span{font-size:21px}.aq-dock button b{font-size:8px}
+ .aq-toast{top:116px;max-width:calc(100vw - 20px);font-size:11px}
+ .aq-pan-hint{right:7px;bottom:7px;padding:5px 8px;font-size:9px}
+}
+@media(max-width:380px){
+ .aq-topbar{grid-template-columns:minmax(100px,1.45fr) auto auto!important}.aq-weather{display:none}
+ .aq-farm-actions button>small{display:none}.aq-farm-actions button{min-height:48px}
+ .aq-dock button b{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .aq-player-body,.aq-player-tool,.aq-neighbor,.aq-house span,.aq-chicken-yard .hen,.aq-heron,.aq-pixel-cloud,.aq-market-crowd,.aq-stall{animation:none!important}
+ .aq-player-path,.aq-room-player{transition:none!important}
+}
+
+.aq-hub-back{display:inline-flex;align-items:center;gap:6px;margin:2px 0 10px;padding:7px 10px;border:1px solid rgba(255,241,200,.28);border-radius:999px;background:rgba(4,27,43,.62);color:#dff7ff!important;font-size:10px;font-weight:900;text-decoration:none!important;backdrop-filter:blur(8px)}.aq-hub-back:hover{border-color:#7edfff;background:rgba(18,75,105,.72)}
+
+
+/* AquaQuest farm readiness loop */
+.aq-farm-status{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px
+}
+.aq-farm-status>span{
+  min-width:0;display:flex;align-items:center;gap:9px;padding:9px 11px;
+  border:2px solid rgba(111,71,39,.32);border-radius:15px;background:rgba(255,244,207,.92);
+  color:#5a3a22;box-shadow:0 3px 0 rgba(95,61,34,.42)
+}
+.aq-farm-status>span>i{font-style:normal;font-size:24px}
+.aq-farm-status>span>span{min-width:0}.aq-farm-status b,.aq-farm-status small{display:block}
+.aq-farm-status b{font-size:12px}.aq-farm-status small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.72}
+.aq-farm-status .is-ready{background:#edf7c9;border-color:#739a45}.aq-farm-status .is-ready small{color:#4f7b2f;opacity:1;font-weight:900}
+.aq-farm-status .is-waiting{background:#f7e3ad}
+
+.aq-map-action{
+  position:absolute;z-index:10;display:grid;gap:1px;min-width:94px;padding:6px 9px;
+  border:2px solid #684224;border-radius:11px;background:rgba(255,246,213,.96);color:#5a3a22;
+  box-shadow:0 3px 0 #624022;font:inherit;cursor:pointer;text-align:center
+}
+.aq-map-action b{font-size:10px;line-height:1.1}.aq-map-action em{font-size:8px;font-style:normal;opacity:.7}
+.aq-map-action:disabled{cursor:not-allowed;opacity:.7;filter:saturate(.68)}
+.aq-map-action--field{left:50%;bottom:10px;transform:translateX(-50%)}
+.aq-map-action--neighbor{left:50%;top:100%;transform:translate(-50%,4px)}
+.aq-map-action--chicken{right:8px;top:8px}
+
+.aq-crop{
+  position:relative;overflow:hidden;min-width:0;min-height:0;background:#75482a!important;
+  border:2px solid rgba(65,37,20,.22);box-shadow:inset 0 4px 0 rgba(255,255,255,.06)
+}
+.aq-crop-stem,.aq-crop-leaf,.aq-crop-head{position:absolute;display:block;transition:all .55s ease}
+.aq-crop-stem{left:calc(50% - 2px);bottom:8px;width:4px;height:34px;border-radius:4px;background:#4d8f3d}
+.aq-crop-leaf{bottom:22px;width:17px;height:9px;border-radius:100% 0 100% 0;background:#6eb64d}
+.aq-crop-leaf.l1{left:calc(50% - 18px);transform:rotate(18deg)}.aq-crop-leaf.l2{left:50%;transform:scaleX(-1) rotate(18deg)}
+.aq-crop-head{left:calc(50% - 12px);bottom:38px;width:24px;height:22px;border-radius:48% 52% 45% 55%;background:#9dd458;box-shadow:inset -5px -4px 0 rgba(73,122,48,.24)}
+.aq-crop.crop-1 .aq-crop-head{background:#e3b04f;box-shadow:inset -5px -4px 0 rgba(155,94,37,.23)}.aq-crop.crop-2 .aq-crop-head{background:#82c65a}
+.aq-farm-scene.crop-sprout .aq-crop-stem{height:12px}.aq-farm-scene.crop-sprout .aq-crop-leaf{bottom:14px;width:10px;height:6px}
+.aq-farm-scene.crop-sprout .aq-crop-leaf.l1{left:calc(50% - 10px)}.aq-farm-scene.crop-sprout .aq-crop-head{width:7px;height:7px;left:calc(50% - 3px);bottom:19px}
+.aq-farm-scene.crop-growing .aq-crop-stem{height:23px}.aq-farm-scene.crop-growing .aq-crop-leaf{bottom:18px;width:14px;height:8px}
+.aq-farm-scene.crop-growing .aq-crop-head{width:15px;height:14px;left:calc(50% - 7px);bottom:29px}
+.aq-farm-scene.crop-almost .aq-crop-head{width:20px;height:18px;left:calc(50% - 10px);bottom:35px}
+.aq-farm-scene.crop-ready .aq-crop-head{animation:aq-crop-ready 1.25s ease-in-out infinite}
+@keyframes aq-crop-ready{50%{transform:translateY(-3px) scale(1.06)}}
+
+@media(max-width:620px){
+  .aq-farm-status{gap:4px}.aq-farm-status>span{gap:5px;padding:6px 7px;border-width:1px;border-radius:10px;box-shadow:0 2px 0 rgba(95,61,34,.35)}
+  .aq-farm-status>span>i{font-size:18px}.aq-farm-status b{font-size:9px}.aq-farm-status small{font-size:8px}
+  .aq-map-action{min-width:82px;padding:5px 7px;border-width:1px}.aq-map-action b{font-size:9px}.aq-map-action em{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .aq-crop-stem,.aq-crop-leaf,.aq-crop-head{transition:none!important}.aq-farm-scene.crop-ready .aq-crop-head{animation:none!important}
+}

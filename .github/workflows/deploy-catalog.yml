@@ -1,0 +1,489 @@
+name: Deploy Product Catalog Production
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: product-catalog-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: [self-hosted, linux, nexora-catalog]
+    timeout-minutes: 45
+    env:
+      CATALOG_NAMESPACE: product-catalog
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      CATALOG_DOMAIN: ${{ vars.CATALOG_DOMAIN || 'catalog.hungtp.click' }}
+      ORDERS_BASE_URL: ${{ vars.CATALOG_ORDERS_BASE_URL || 'https://crm.hungtp.click' }}
+      POSTGRES_PASSWORD: ${{ secrets.CATALOG_POSTGRES_PASSWORD }}
+      CATALOG_DB_URL: ${{ secrets.CATALOG_DB_URL }}
+      ORDERS_INTERNAL_TOKEN: ${{ secrets.CATALOG_ORDERS_INTERNAL_TOKEN }}
+      SENTRY_DSN: ${{ secrets.CATALOG_SENTRY_DSN }}
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      SOURCE_VAULT_APP_ID: product-catalog
+      SOURCE_VAULT_URL: https://desk.hungtp.click/api/v1/source-archive
+      SOURCE_VAULT_EXPECTED_REPO: tranhung204/nexora-product-catalog
+
+    steps:
+      - name: Preflight runner and bootstrap production configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v git >/dev/null
+          command -v docker >/dev/null
+          test -n "${CATALOG_DOMAIN:-}" || { echo "[ERROR] CATALOG_DOMAIN is empty"; exit 1; }
+          test -n "${ORDERS_BASE_URL:-}" || { echo "[ERROR] ORDERS_BASE_URL is empty"; exit 1; }
+
+          if command -v kubectl >/dev/null 2>&1 && kubectl get namespace default >/dev/null 2>&1; then
+            echo "KUBE_MODE=kubectl" >> "$GITHUB_ENV"
+            KUBE_MODE=kubectl
+          elif command -v k3s >/dev/null 2>&1 && k3s kubectl get namespace default >/dev/null 2>&1; then
+            echo "KUBE_MODE=k3s" >> "$GITHUB_ENV"
+            KUBE_MODE=k3s
+          elif command -v sudo >/dev/null 2>&1 && sudo -n k3s kubectl get namespace default >/dev/null 2>&1; then
+            echo "KUBE_MODE=sudo-k3s" >> "$GITHUB_ENV"
+            KUBE_MODE=sudo-k3s
+          else
+            echo "[ERROR] Runner cannot access K3s"; exit 1
+          fi
+
+          if command -v k3s >/dev/null 2>&1 && k3s ctr -n k8s.io images list >/dev/null 2>&1; then
+            echo "CTR_MODE=k3s" >> "$GITHUB_ENV"
+          elif command -v sudo >/dev/null 2>&1 && sudo -n k3s ctr -n k8s.io images list >/dev/null 2>&1; then
+            echo "CTR_MODE=sudo-k3s" >> "$GITHUB_ENV"
+          else
+            echo "[ERROR] Runner cannot import images into K3s containerd"; exit 1
+          fi
+
+          kube() {
+            case "$KUBE_MODE" in
+              kubectl) kubectl "$@" ;;
+              k3s) k3s kubectl "$@" ;;
+              sudo-k3s) sudo -n k3s kubectl "$@" ;;
+            esac
+          }
+
+          if [ -z "${POSTGRES_PASSWORD:-}" ]; then
+            if kube get namespace "$CATALOG_NAMESPACE" >/dev/null 2>&1 && kube -n "$CATALOG_NAMESPACE" get secret catalog-postgres-secret >/dev/null 2>&1; then
+              POSTGRES_PASSWORD="$(kube -n "$CATALOG_NAMESPACE" get secret catalog-postgres-secret -o jsonpath='{.data.POSTGRES_PASSWORD}' | base64 -d)"
+              echo "[INFO] Reusing existing Catalog PostgreSQL credential from K3s"
+            else
+              command -v openssl >/dev/null || { echo "[ERROR] openssl is required to bootstrap PostgreSQL credential"; exit 1; }
+              POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+              echo "[INFO] Generated initial Catalog PostgreSQL credential; it will be persisted only in K3s Secret"
+            fi
+            echo "::add-mask::$POSTGRES_PASSWORD"
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> "$GITHUB_ENV"
+          fi
+
+          if [ -z "${CATALOG_DB_URL:-}" ]; then
+            CATALOG_DB_URL="postgres://catalog:${POSTGRES_PASSWORD}@catalog-postgres:5432/nexora_catalog"
+            echo "::add-mask::$CATALOG_DB_URL"
+            echo "CATALOG_DB_URL=$CATALOG_DB_URL" >> "$GITHUB_ENV"
+          fi
+
+          if [ -n "${ORDERS_INTERNAL_TOKEN:-}" ]; then
+            echo "ORDERS_ADAPTER=http" >> "$GITHUB_ENV"
+            echo "[INFO] Real Orders HTTP integration enabled"
+          else
+            echo "ORDERS_ADAPTER=fixture" >> "$GITHUB_ENV"
+            echo "[WARN] CATALOG_ORDERS_INTERNAL_TOKEN is not configured; deploying with fixture read-model so public Catalog can be verified. Production integration remains pending."
+          fi
+
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "[WARN] CATALOG_SENTRY_DSN is not configured; deployment continues with Sentry disabled."
+          fi
+
+          OPS_READ_SECRET=""
+          if kube get namespace "$CATALOG_NAMESPACE" >/dev/null 2>&1 && kube -n "$CATALOG_NAMESPACE" get secret catalog-operations-read >/dev/null 2>&1; then
+            OPS_READ_SECRET="$(kube -n "$CATALOG_NAMESPACE" get secret catalog-operations-read -o jsonpath='{.data.NEXORA_OPERATIONS_READ_SECRET}' | base64 -d)"
+          fi
+          if [ -z "$OPS_READ_SECRET" ]; then
+            command -v openssl >/dev/null || { echo "[ERROR] openssl is required for Operations read credential"; exit 1; }
+            OPS_READ_SECRET="$(openssl rand -hex 32)"
+          fi
+          test -n "$OPS_READ_SECRET"
+          echo "::add-mask::$OPS_READ_SECRET"
+          echo "NEXORA_OPERATIONS_READ_SECRET=$OPS_READ_SECRET" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Verify tested commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$DEPLOY_SHA"
+          echo "[OK] deploying tested commit $DEPLOY_SHA"
+
+      - name: Build and import immutable images
+        shell: bash
+        run: |
+          set -euo pipefail
+          BACKEND_IMAGE="nexora-catalog-backend:$DEPLOY_SHA"
+          FRONTEND_IMAGE="nexora-catalog-frontend:$DEPLOY_SHA"
+          docker build --pull -t "$BACKEND_IMAGE" backend
+          docker build --pull \
+            --build-arg VITE_SENTRY_DSN="$SENTRY_DSN" \
+            --build-arg VITE_DEPLOY_SHA="$DEPLOY_SHA" \
+            --build-arg VITE_APP_ENV=production \
+            -t "$FRONTEND_IMAGE" frontend
+          TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
+          docker save "$BACKEND_IMAGE" -o "$TMP/backend.tar"
+          docker save "$FRONTEND_IMAGE" -o "$TMP/frontend.tar"
+          ctr_import() {
+            case "$CTR_MODE" in
+              k3s) k3s ctr -n k8s.io images import "$1" ;;
+              sudo-k3s) sudo -n k3s ctr -n k8s.io images import "$1" ;;
+            esac
+          }
+          ctr_import "$TMP/backend.tar"
+          ctr_import "$TMP/frontend.tar"
+
+      - name: Render manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE_TAG="$DEPLOY_SHA" CATALOG_DOMAIN="$CATALOG_DOMAIN" ./deploy/scripts/render-prod.sh deploy/k3s/prod /tmp/catalog-rendered
+
+      - name: Apply namespace, secrets, config and storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() {
+            case "$KUBE_MODE" in
+              kubectl) kubectl "$@" ;;
+              k3s) k3s kubectl "$@" ;;
+              sudo-k3s) sudo -n k3s kubectl "$@" ;;
+            esac
+          }
+          kube apply -f /tmp/catalog-rendered/00-namespace.yaml
+          kube -n "$CATALOG_NAMESPACE" create secret generic catalog-postgres-secret \
+            --from-literal=POSTGRES_DB=nexora_catalog \
+            --from-literal=POSTGRES_USER=catalog \
+            --from-literal=POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+            --dry-run=client -o yaml | kube apply -f -
+          kube -n "$CATALOG_NAMESPACE" create secret generic catalog-backend-secret \
+            --from-literal=CATALOG_DB_URL="$CATALOG_DB_URL" \
+            --from-literal=ORDERS_INTERNAL_TOKEN="$ORDERS_INTERNAL_TOKEN" \
+            --from-literal=SENTRY_DSN="$SENTRY_DSN" \
+            --dry-run=client -o yaml | kube apply -f -
+          kube -n "$CATALOG_NAMESPACE" create secret generic catalog-operations-read \
+            --from-literal=NEXORA_OPERATIONS_READ_SECRET="$NEXORA_OPERATIONS_READ_SECRET" \
+            --dry-run=client -o yaml | kube apply -f - >/dev/null
+          kube -n "$CATALOG_NAMESPACE" create configmap catalog-config \
+            --from-literal=APP_ID=product-catalog \
+            --from-literal=NEXORA_NAMESPACE=product-catalog \
+            --from-literal=NEXORA_ENVIRONMENT=production \
+            --from-literal=DEPLOY_SHA="$DEPLOY_SHA" \
+            --from-literal=SENTRY_RELEASE="product-catalog@$DEPLOY_SHA" \
+            --from-literal=PORT=8080 \
+            --from-literal=ORDERS_ADAPTER="$ORDERS_ADAPTER" \
+            --from-literal=ORDERS_BASE_URL="$ORDERS_BASE_URL" \
+            --from-literal=SYNC_INTERVAL_SECONDS=60 \
+            --from-literal=SYNC_PAGE_SIZE=200 \
+            --from-literal=MEDIA_ROOT=/app/uploads \
+            --from-literal=MAX_MEDIA_BYTES=8388608 \
+            --from-literal=STOCK_STALE_SECONDS=300 \
+            --from-literal=ADMIN_AUTH_MODE=trusted_headers \
+            --from-literal=ADMIN_ALLOWED_ROLES=catalog-admin,nexora-admin \
+            --dry-run=client -o yaml | kube apply -f -
+          kube apply -f /tmp/catalog-rendered/10-storage.yaml
+          kube apply -f /tmp/catalog-rendered/20-postgres.yaml
+          kube -n "$CATALOG_NAMESPACE" rollout status deployment/catalog-postgres --timeout=300s
+
+      - name: Verify shared TLS issuer
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() { case "$KUBE_MODE" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; esac; }
+          kube get clusterissuer letsencrypt-prod >/dev/null || { echo '[ERROR] Missing ClusterIssuer letsencrypt-prod'; exit 1; }
+
+      - name: Run database migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() { case "$KUBE_MODE" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; esac; }
+          kube -n "$CATALOG_NAMESPACE" delete job catalog-db-migrate --ignore-not-found
+          kube apply -f /tmp/catalog-rendered/30-migrate-job.yaml
+          kube -n "$CATALOG_NAMESPACE" wait --for=condition=complete job/catalog-db-migrate --timeout=600s
+
+      - name: Deploy application, ingress and backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() { case "$KUBE_MODE" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; esac; }
+          kube apply -f /tmp/catalog-rendered/40-backend.yaml
+          kube apply -f /tmp/catalog-rendered/50-frontend.yaml
+          kube apply -f /tmp/catalog-rendered/80-ingress.yaml
+          kube apply -f /tmp/catalog-rendered/90-backup-cronjob.yaml
+          kube -n "$CATALOG_NAMESPACE" rollout status deployment/catalog-backend --timeout=300s
+          kube -n "$CATALOG_NAMESPACE" rollout status deployment/catalog-frontend --timeout=240s
+
+      - name: Internal health and integration smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() { case "$KUBE_MODE" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; esac; }
+          kube -n "$CATALOG_NAMESPACE" exec deployment/catalog-postgres -- sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+          kube -n "$CATALOG_NAMESPACE" exec -i deployment/catalog-backend -- node - <<NODE
+          const base='http://127.0.0.1:8080';
+          async function j(path,opt){const r=await fetch(base+path,opt);const b=await r.json().catch(()=>null);console.log(path,r.status,JSON.stringify(b)?.slice(0,500));if(!r.ok)throw new Error(path+' -> '+r.status);return b}
+          (async()=>{
+            const live=await j('/health/live'); if(live.deploy_sha!=='$DEPLOY_SHA')throw new Error('backend deploy SHA mismatch');
+            await j('/health/ready');
+            const list=await j('/api/v1/catalog/products'); if(!Array.isArray(list.items))throw new Error('public products response invalid');
+            const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+            const opsHeaders={authorization:'Bearer '+process.env.NEXORA_OPERATIONS_READ_SECRET,'x-nexora-consumer':'nexora-operations'};
+            for(const path of [
+              '/api/internal/operations/v1/data-health',
+              '/api/internal/operations/v1/summary?from='+day+'&to='+day
+            ]){
+              const rr=await fetch(base+path,{headers:opsHeaders});const tt=await rr.text();
+              if(!rr.ok)throw new Error(path+' -> '+rr.status+' '+tt);
+              const body=JSON.parse(tt||'{}');
+              if(body.schema_version!=='ops-metrics.v1'||body.source_app!=='product-catalog'||body.crm_instance_id!=='product-catalog')throw new Error('Catalog Operations envelope mismatch');
+            }
+            const denied=await fetch(base+'/api/internal/operations/v1/data-health',{headers:{authorization:'Bearer '+process.env.NEXORA_OPERATIONS_READ_SECRET}});
+            if(denied.status!==403)throw new Error('Catalog Operations consumer-scope guard failed');
+            console.log('[OK] INT-CAT-OPS-001 producer smoke');
+            const community=await j('/api/v1/community/posts'); if(!Array.isArray(community.items))throw new Error('community response invalid');
+            const careUnauthed=await fetch(base+'/api/v1/aquacare/tanks'); console.log('/api/v1/aquacare/tanks',careUnauthed.status); if(careUnauthed.status!==401)throw new Error('AquaCare auth isolation failed');
+            const gameUnauthed=await fetch(base+'/api/v1/game/state'); console.log('/api/v1/game/state',gameUnauthed.status); if(gameUnauthed.status!==401)throw new Error('AquaQuest auth isolation failed');
+            const headers={'x-nexora-user-id':'release-smoke','x-nexora-roles':'nexora-admin'};
+            await j('/api/v1/admin/catalog/products?filter=all',{headers});
+            const sync=await j('/api/v1/admin/catalog/sync',{method:'POST',headers});
+            if(String(sync.status||'').toUpperCase()==='FAILED')throw new Error('Catalog source sync returned FAILED');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          FRONTEND_SHA="$(kube -n "$CATALOG_NAMESPACE" exec deployment/catalog-frontend -- wget -qO- http://127.0.0.1:8080/deploy-sha.txt)"
+          test "$FRONTEND_SHA" = "$DEPLOY_SHA"
+          kube -n "$CATALOG_NAMESPACE" exec deployment/catalog-frontend -- wget -qO- http://127.0.0.1:8080/healthz
+
+      - name: Backup smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          kube() { case "$KUBE_MODE" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; esac; }
+          JOB="catalog-backup-smoke-${DEPLOY_SHA:0:8}"
+          kube -n "$CATALOG_NAMESPACE" delete job "$JOB" --ignore-not-found
+          kube -n "$CATALOG_NAMESPACE" create job --from=cronjob/catalog-backup "$JOB"
+          kube -n "$CATALOG_NAMESPACE" wait --for=condition=complete "job/$JOB" --timeout=1200s
+          kube -n "$CATALOG_NAMESPACE" logs "job/$JOB" --tail=100
+
+      - name: Verify public HTTPS and Admin isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          check200(){ code="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 30 "$1")"; test "$code" = 200 || { echo "[ERROR] $1 -> $code"; exit 1; }; echo "[OK] $1 -> $code"; }
+          check200 "https://$CATALOG_DOMAIN/"
+          check200 "https://$CATALOG_DOMAIN/health/live"
+          check200 "https://$CATALOG_DOMAIN/api/v1/catalog/products"
+          check200 "https://$CATALOG_DOMAIN/catalog"
+          check200 "https://$CATALOG_DOMAIN/beca.html"
+          check200 "https://$CATALOG_DOMAIN/tanks"
+          check200 "https://$CATALOG_DOMAIN/be.html"
+          check200 "https://$CATALOG_DOMAIN/nhat-bao"
+          check200 "https://$CATALOG_DOMAIN/nhat-bao/mi-an-longfin"
+          check200 "https://$CATALOG_DOMAIN/nhat-bao/mi-an-longfin/experience"
+          LONGFIN_HTML="$(curl -fsS --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN/campaigns/mi-an-longfin/source/experience.html")"
+          printf '%s' "$LONGFIN_HTML" | grep -F 'id="customPay"' >/dev/null
+          printf '%s' "$LONGFIN_HTML" | grep -F 'data-mode="custom"' >/dev/null
+          echo "[OK] Longfin custom payment field is present"
+          check200 "https://$CATALOG_DOMAIN/api/v1/catalog/campaigns/mi-an-longfin/content"
+          LOGIN_JSON="$(curl -fsS --connect-timeout 10 --max-time 30 -X POST "https://$CATALOG_DOMAIN/api/v1/catalog/campaigns/mi-an-longfin/editor/login" -H 'content-type: application/json' --data '{"username":"admin","password":"admin"}')"
+          printf '%s' "$LOGIN_JSON" | grep -F '"ok":true' >/dev/null
+          echo "[OK] Longfin campaign admin login -> admin/admin"
+          EDIT_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 30 -X PUT "https://$CATALOG_DOMAIN/api/v1/catalog/campaigns/mi-an-longfin/editor/content" -H 'content-type: application/json' --data '{"copy":{}}')"
+          test "$EDIT_CODE" = 401 || { echo "[ERROR] unauthenticated campaign edit -> $EDIT_CODE"; exit 1; }
+          echo "[OK] unauthenticated campaign edit blocked -> 401"
+          check200 "https://$CATALOG_DOMAIN/campaigns/mi-an-longfin/hero.png"
+          check200 "https://$CATALOG_DOMAIN/campaigns/mi-an-longfin/source/experience.html"
+          check200 "https://$CATALOG_DOMAIN/campaigns/mi-an-longfin/hero.png"
+          check200 "https://$CATALOG_DOMAIN/wiki"
+          check200 "https://$CATALOG_DOMAIN/hpzwiki"
+          check200 "https://$CATALOG_DOMAIN/policy"
+          check200 "https://$CATALOG_DOMAIN/chinhsach.html"
+          check200 "https://$CATALOG_DOMAIN/care"
+          check200 "https://$CATALOG_DOMAIN/game"
+          check200 "https://$CATALOG_DOMAIN/game/aquaquest"
+          FISH2D_FILE="$(mktemp)"
+          curl -fsS --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN/assets/fish2d/fish-2d-real-v1.webp" -o "$FISH2D_FILE"
+          test "$(head -c 4 "$FISH2D_FILE")" = "RIFF" || { echo "[ERROR] fish 2D atlas invalid WebP/RIFF header"; rm -f "$FISH2D_FILE"; exit 1; }
+          test "$(wc -c < "$FISH2D_FILE")" -gt 5000 || { echo "[ERROR] fish 2D atlas is unexpectedly small"; rm -f "$FISH2D_FILE"; exit 1; }
+          echo "[OK] shared 2D fish atlas -> WebP present"
+          rm -f "$FISH2D_FILE"
+          check200 "https://$CATALOG_DOMAIN/game/aquarium-3d"
+          AQUA3D_HTML="$(curl -fsS --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN/game/aquarium-3d")"
+          AQUA3D_JS="$(printf '%s' "$AQUA3D_HTML" | grep -oE '/assets/[^" ]+\.js' | head -n1)"
+          test -n "$AQUA3D_JS" || { echo "[ERROR] AquaWorld bundle path not found"; exit 1; }
+          curl -fsS --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN$AQUA3D_JS" | grep -F 'Cá thật mẫu 01' >/dev/null
+          echo "[OK] AquaWorld real-fish prototype is present in production bundle"
+          check_glb(){
+            name="$1"; expected="$2"; file="$(mktemp)";
+            curl -fsS --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN/assets/aquaworld/fish/$name" -o "$file"
+            test "$(head -c 4 "$file")" = "glTF" || { echo "[ERROR] $name invalid GLB header"; rm -f "$file"; exit 1; }
+            actual="$(sha256sum "$file" | awk '{print $1}')"
+            test "$actual" = "$expected" || { echo "[ERROR] $name SHA mismatch: $actual"; rm -f "$file"; exit 1; }
+            echo "[OK] AquaWorld model $name -> GLB SHA MATCH"
+            rm -f "$file"
+          }
+          check_glb "01_betta.glb" "a6af6ef4f77e6916b5c475460522617ce19ea21ac9879ea1cce2c8bf12810d5f"
+          check_glb "02_koi.glb" "219855bcdd86b29e05124b61ecc7a1a4c4bbe3850fc6a90ad7234f082315b1d4"
+          check_glb "03_clownfish.glb" "2af0fa5651080ddca51b7a7782229145ec602c5d852408b2d66f0f2544326444"
+          check_glb "04_discus.glb" "0b9986be46be73fdf987b69f7007ca028efbf65117443d5399eaf8e5b758d4e3"
+          check_glb "05_angelfish.glb" "06c9384eefb58ca2cc366b44058838c668f80287e7379dc3f359c52abe10d1f0"
+          check_glb "06_oranda_goldfish.glb" "30e12ed9f3d34bb184ab4b3887d69eb91a04c109402b01c56cbeed0f4d913fc3"
+          check_glb "07_arowana.glb" "852d3d599e6ab3bdb21b97e21fb09085ec8919740afc76dddebfd188c90daa3c"
+          check_glb "08_pufferfish.glb" "d02fa9c26957647f4193caf6dd7479caac69f25ee8a69fa3e2eca2a0e10a1d4f"
+          check_glb "09_blue_tang.glb" "9bb834e212e764812a190e4b06f3c68bdb05093376a357e9c016e261f7cc0b46"
+          check_glb "10_shark.glb" "2ef62eeba79050317ea195082652d64a8b3ae1b8ae9c2446f85d4fe6b1deff29"
+          check200 "https://$CATALOG_DOMAIN/market"
+          check200 "https://$CATALOG_DOMAIN/api/v1/catalog/market/sessions?include_ended=true"
+          check200 "https://$CATALOG_DOMAIN/community"
+          check200 "https://$CATALOG_DOMAIN/me"
+          check200 "https://$CATALOG_DOMAIN/ui-kit"
+          check200 "https://$CATALOG_DOMAIN/assets/hpz/logo.png"
+          check200 "https://$CATALOG_DOMAIN/assets/hpz/scene/fish_blue.png"
+          check200 "https://$CATALOG_DOMAIN/assets/hpz/scene/fish_green.png"
+          check200 "https://$CATALOG_DOMAIN/assets/hpz/scene/bubble_a.png"
+          ADMIN_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 30 "https://$CATALOG_DOMAIN/api/v1/admin/catalog/products")"
+          case "$ADMIN_CODE" in 404|401|403) echo "[OK] public Admin API blocked -> $ADMIN_CODE";; *) echo "[ERROR] public Admin API unexpectedly reachable -> $ADMIN_CODE"; exit 1;; esac
+
+      - name: Publish production source to NEXORA Source Vault
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_SHA"
+          test "$(git rev-parse HEAD)" = "$DEPLOY_SHA"
+
+          ARCHIVE="/tmp/${SOURCE_VAULT_APP_ID}-${DEPLOY_SHA:0:12}.zip"
+          rm -f "$ARCHIVE"
+          git archive --format=zip --output="$ARCHIVE" "$DEPLOY_SHA"
+          test -s "$ARCHIVE"
+
+          OIDC_JSON="$(curl -fsSL \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=nexora-desk-source-archive")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | sed -n 's/.*"value":"\([^"]*\)".*/\1/p')"
+          test -n "$OIDC_TOKEN"
+          echo "::add-mask::$OIDC_TOKEN"
+
+          published=0
+          for attempt in 1 2 3 4 5; do
+            if curl -fsS \
+              -X PUT \
+              "${SOURCE_VAULT_URL}/${SOURCE_VAULT_APP_ID}/archive" \
+              -H "Authorization: Bearer $OIDC_TOKEN" \
+              -H "Content-Type: application/zip" \
+              -H "X-Source-Sha: $DEPLOY_SHA" \
+              -H "X-Source-Branch: main" \
+              --data-binary "@$ARCHIVE" >/tmp/source-vault-publish.json; then
+              published=1
+              break
+            fi
+            echo "[WARN] Source Vault publish attempt ${attempt}/5 failed for SHA $DEPLOY_SHA"
+            sleep 2
+          done
+
+          rm -f "$ARCHIVE"
+          test "$published" = "1"
+          echo "[OK] Source Vault publish accepted for $SOURCE_VAULT_APP_ID@$DEPLOY_SHA"
+
+      - name: Verify NEXORA Source Vault release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          META="$(curl -fsS --connect-timeout 10 --max-time 30 "$SOURCE_VAULT_URL")"
+          SOURCE_VAULT_META="$META" python3 - <<'PY'
+          import json, os, sys
+          meta=json.loads(os.environ.get('SOURCE_VAULT_META') or '{}')
+          app_id=os.environ['SOURCE_VAULT_APP_ID']
+          expected_sha=os.environ['DEPLOY_SHA']
+          expected_repo=os.environ['SOURCE_VAULT_EXPECTED_REPO'].lower()
+          item=next((x for x in meta.get('items',[]) if x.get('app_id')==app_id),None)
+          if not item:
+              raise SystemExit('Source Vault app mapping missing: '+app_id)
+          checks={
+              'has_archive': item.get('has_archive') is True,
+              'sha': item.get('source_sha') == expected_sha,
+              'branch': item.get('branch') == 'main',
+              'repository': str(item.get('repository') or '').lower() == expected_repo,
+              'archive_size': int(item.get('archive_size') or 0) > 0,
+          }
+          print(json.dumps({
+              'app_id': item.get('app_id'),
+              'repository': item.get('repository'),
+              'branch': item.get('branch'),
+              'source_sha': item.get('source_sha'),
+              'archive_size': item.get('archive_size'),
+              'checks': checks,
+          }))
+          failed=[name for name,ok in checks.items() if not ok]
+          if failed:
+              raise SystemExit('Source Vault verification failed: '+','.join(failed))
+          PY
+          echo "[OK] Source Vault SHA matches production: $DEPLOY_SHA"
+
+      - name: Deployment summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo '## PRODUCT CATALOG DEPLOY SUCCESS'
+            echo ''
+            echo "- Commit: \`$DEPLOY_SHA\`"
+            echo "- Namespace: \`$CATALOG_NAMESPACE\`"
+            echo "- Domain: \`$CATALOG_DOMAIN\`"
+            echo "- Catalog source adapter: \`$ORDERS_ADAPTER\`"
+            echo '- DB migration: OK'
+            echo '- Backend/frontend health: OK'
+            echo '- INT-CAT-OPS-001 read-only producer smoke: OK'
+            if [ "$ORDERS_ADAPTER" = http ]; then
+              echo '- Orders sync smoke: OK'
+            else
+              echo '- Orders integration: PENDING; fixture read-model used for initial live verification'
+            fi
+            echo '- Backup smoke: OK'
+            echo '- Public HTTPS smoke: OK'
+            echo '- Public Admin API isolation: OK'
+            echo '- Source Vault publish: PASS'
+            echo "- Source Vault SHA: \`$DEPLOY_SHA\`"
+            if [ -n "${SENTRY_DSN:-}" ]; then
+              echo '- Sentry DSN/tags configured: YES'
+            else
+              echo '- Sentry DSN: PENDING'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          kube() { case "${KUBE_MODE:-}" in kubectl) kubectl "$@";; k3s) k3s kubectl "$@";; sudo-k3s) sudo -n k3s kubectl "$@";; *) return 2;; esac; }
+          kube -n "$CATALOG_NAMESPACE" get pods,deployments,services,ingress,cronjobs,jobs -o wide
+          kube -n "$CATALOG_NAMESPACE" logs job/catalog-db-migrate --all-containers=true --tail=200
+          kube -n "$CATALOG_NAMESPACE" logs deployment/catalog-backend --all-containers=true --tail=200
+          kube -n "$CATALOG_NAMESPACE" logs deployment/catalog-frontend --all-containers=true --tail=100
+          kube -n "$CATALOG_NAMESPACE" get events --sort-by=.lastTimestamp | tail -n 100
+          {
+            echo '## PRODUCT CATALOG DEPLOY FAILED'
+            echo ''
+            echo "- Commit: \`$DEPLOY_SHA\`"
+            echo '- Production status must remain NOT VERIFIED.'
+          } >> "$GITHUB_STEP_SUMMARY"

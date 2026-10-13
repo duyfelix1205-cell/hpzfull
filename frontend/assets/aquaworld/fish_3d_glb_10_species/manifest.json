@@ -1,0 +1,102 @@
+[
+  {
+    "file": "01_betta.glb",
+    "species": "Betta / Siamese fighting fish",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 10264,
+    "size_bytes": 228892,
+    "geometry_parts": 10
+  },
+  {
+    "file": "02_koi.glb",
+    "species": "Koi carp",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 10348,
+    "size_bytes": 245948,
+    "geometry_parts": 11
+  },
+  {
+    "file": "03_clownfish.glb",
+    "species": "Clownfish",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 10264,
+    "size_bytes": 218176,
+    "geometry_parts": 10
+  },
+  {
+    "file": "04_discus.glb",
+    "species": "Discus",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 12536,
+    "size_bytes": 293540,
+    "geometry_parts": 10
+  },
+  {
+    "file": "05_angelfish.glb",
+    "species": "Freshwater angelfish",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 12312,
+    "size_bytes": 264392,
+    "geometry_parts": 12
+  },
+  {
+    "file": "06_oranda_goldfish.glb",
+    "species": "Oranda goldfish",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 11700,
+    "size_bytes": 241496,
+    "geometry_parts": 28
+  },
+  {
+    "file": "07_arowana.glb",
+    "species": "Arowana",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 10904,
+    "size_bytes": 238692,
+    "geometry_parts": 12
+  },
+  {
+    "file": "08_pufferfish.glb",
+    "species": "Pufferfish",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 11840,
+    "size_bytes": 271196,
+    "geometry_parts": 60
+  },
+  {
+    "file": "09_blue_tang.glb",
+    "species": "Blue tang",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 11672,
+    "size_bytes": 251444,
+    "geometry_parts": 10
+  },
+  {
+    "file": "10_shark.glb",
+    "species": "Shark",
+    "format": "GLB / glTF 2.0",
+    "orientation": "Y-up; head +X",
+    "normalized_full_length_x": 2.0,
+    "triangles": 12564,
+    "size_bytes": 264884,
+    "geometry_parts": 19
+  }
+]

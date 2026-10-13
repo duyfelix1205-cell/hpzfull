@@ -1,0 +1,181 @@
+name: ISS-2026-0145 Astra6 Browser UAT
+on:
+  push:
+    branches: [fix/ISS-2026-0145-zwm-mobile-uat]
+permissions:
+  contents: read
+jobs:
+  visual-uat:
+    runs-on: [self-hosted, linux, nexora-catalog]
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install and build complete React frontend
+        run: |
+          npm install
+          npm --workspace frontend run build
+      - name: Start isolated, read-only local React preview with public API GET passthrough
+        shell: bash
+        run: |
+          set -euo pipefail
+          (npm --workspace frontend run preview -- --host 127.0.0.1 --port 4174 --strictPort > "$RUNNER_TEMP/zwm-preview.log" 2>&1 &)
+          cat > "$RUNNER_TEMP/zwm-proxy.mjs" <<'NODE'
+          import http from 'node:http';
+          const server=http.createServer(async (req,res)=>{
+            if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
+            const upstream=(req.url.startsWith('/api/')?'https://catalog.hungtp.click':'http://127.0.0.1:4174')+req.url;
+            try {
+              const response=await fetch(upstream,{method:req.method,headers:{accept:req.headers.accept||'*/*'}});
+              const excluded=new Set(['connection','transfer-encoding','content-encoding','content-length','set-cookie','content-security-policy','content-security-policy-report-only']);
+              for(const [k,v] of response.headers)if(!excluded.has(k.toLowerCase()))res.setHeader(k,v);
+              res.statusCode=response.status;
+              res.end(Buffer.from(await response.arrayBuffer()));
+            } catch(e){res.statusCode=502;res.end('Local UAT upstream unavailable');}
+          });
+          server.listen(4175,'127.0.0.1');
+          NODE
+          (node "$RUNNER_TEMP/zwm-proxy.mjs" > "$RUNNER_TEMP/zwm-proxy.log" 2>&1 &)
+          for i in $(seq 1 30);do
+            if curl -fsS -o /dev/null http://127.0.0.1:4175/market;then break;fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4175/market >/dev/null
+          echo "PREVIEW_READY read_only_public_GET_only"
+      - name: Prepare isolated Chromium dependencies without host installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN=/root/.cache/ms-playwright/chromium-1187/chrome-linux/chrome
+          test -x "$BIN"
+          echo "CHROME_MISSING_BEFORE"
+          ldd "$BIN" | grep 'not found' || true
+          mkdir -p "$RUNNER_TEMP/chrome-libs"
+          python3 - "$BIN" "$RUNNER_TEMP/chrome-libs" <<'PY'
+          import subprocess,os,sys,pathlib
+          binary=sys.argv[1];root=pathlib.Path(sys.argv[2])
+          packages={
+            'libatk-1.0.so.0':['libatk1.0-0t64','libatk1.0-0'],
+            'libatk-bridge-2.0.so.0':['libatk-bridge2.0-0t64','libatk-bridge2.0-0'],
+            'libatspi.so.0':['libatspi2.0-0t64','libatspi2.0-0'],
+            'libcups.so.2':['libcups2t64','libcups2'],
+            'libxkbcommon.so.0':['libxkbcommon0'],
+            'libnss3.so':['libnss3'],
+            'libXcomposite.so.1':['libxcomposite1'],
+            'libXdamage.so.1':['libxdamage1'],
+            'libXfixes.so.3':['libxfixes3'],
+            'libXrandr.so.2':['libxrandr2'],
+            'libgbm.so.1':['libgbm1'],
+            'libasound.so.2':['libasound2t64','libasound2'],
+            'libpangocairo-1.0.so.0':['libpangocairo-1.0-0'],
+            'libpango-1.0.so.0':['libpango-1.0-0'],
+            'libcairo.so.2':['libcairo2'],
+            'libglib-2.0.so.0':['libglib2.0-0t64','libglib2.0-0'],
+            'libdbus-1.so.3':['libdbus-1-3'],
+            'libxshmfence.so.1':['libxshmfence1'],
+            'libdrm.so.2':['libdrm2'],
+            'libavahi-common.so.3':['libavahi-common3'],
+            'libavahi-client.so.3':['libavahi-client3'],
+            'libXi.so.6':['libxi6'],
+            'libXrender.so.1':['libxrender1'],
+            'libxcb-render.so.0':['libxcb-render0'],
+            'libxcb-shm.so.0':['libxcb-shm0'],
+            'libpixman-1.so.0':['libpixman-1-0'],
+            'libthai.so.0':['libthai0'],
+            'libharfbuzz.so.0':['libharfbuzz0b'],
+            'libdatrie.so.1':['libdatrie1'],
+            'libgraphite2.so.3':['libgraphite2-3'],
+            'libX11.so.6':['libx11-6'],
+            'libXext.so.6':['libxext6'],
+            'libfontconfig.so.1':['libfontconfig1'],
+            'libfreetype.so.6':['libfreetype6'],
+            'libxcb.so.1':['libxcb1'],
+            'libXau.so.6':['libxau6'],
+            'libXdmcp.so.6':['libxdmcp6'],
+            'libbrotlidec.so.1':['libbrotli1'],
+            'libjpeg.so.8':['libjpeg-turbo8'],
+            'libpng16.so.16':['libpng16-16t64','libpng16-16'],
+            'libicuuc.so.74':['libicu74'],
+            'libicudata.so.74':['libicu74'],
+            'libicui18n.so.74':['libicu74'],
+            'libexpat.so.1':['libexpat1'],
+            'libuuid.so.1':['libuuid1'],
+            'libgobject-2.0.so.0':['libglib2.0-0t64','libglib2.0-0'],
+          }
+          libpath=root/'usr/lib/x86_64-linux-gnu'
+          for cycle in range(4):
+            env=os.environ.copy()
+            env['LD_LIBRARY_PATH']=str(libpath)+((':'+env['LD_LIBRARY_PATH']) if env.get('LD_LIBRARY_PATH') else '')
+            result=subprocess.run(['ldd',binary],capture_output=True,text=True,env=env)
+            missing=[line.strip().split(' => ')[0] for line in result.stdout.splitlines() if 'not found' in line]
+            print('ISOLATED_LIB_CYCLE',cycle,'MISSING',missing,flush=True)
+            if not missing:break
+            chosen=[]
+            for lib in missing:
+              candidates=packages.get(lib)
+              if not candidates:continue
+              for candidate in candidates:
+                if subprocess.run(['apt-cache','show',candidate],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
+                  chosen.append(candidate);break
+            chosen=list(dict.fromkeys(chosen))
+            if not chosen:break
+            print('APT_DOWNLOAD_TO_TEMP_ONLY',chosen,flush=True)
+            for pkg in chosen:
+              res=subprocess.run(['apt-get','download',pkg],cwd=root,timeout=90,capture_output=True,text=True)
+              if res.returncode:print('DOWNLOAD_FAILED',pkg,res.stderr[-350:],flush=True)
+            for deb in root.glob('*.deb'):
+              subprocess.run(['dpkg-deb','-x',str(deb),str(root)],check=True)
+              deb.unlink()
+          leftovers=subprocess.run(['ldd',binary],capture_output=True,text=True,env=env).stdout
+          missing=[line.strip() for line in leftovers.splitlines() if 'not found' in line]
+          print('CHROME_MISSING_AFTER',missing,flush=True)
+          if missing:raise SystemExit('Remaining Chromium libraries after isolated dependency extraction')
+          PY
+          echo "LD_LIBRARY_PATH=$RUNNER_TEMP/chrome-libs/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
+      - name: Render browser screenshots and smoke all genuine UI screens
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN=/root/.cache/ms-playwright/chromium-1187/chrome-linux/chrome
+          test -x "$BIN"
+          mkdir -p "$RUNNER_TEMP/zwm-0145-artifacts"
+          for viewport in 1440,900 390,844;do
+            case "$viewport" in
+              1440,900) target=desktop;;
+              390,844) target=mobile;;
+            esac
+            "$BIN" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-background-networking --hide-scrollbars --window-size="$viewport" --virtual-time-budget=6000 --screenshot="$RUNNER_TEMP/zwm-0145-artifacts/astra6-review-$target.png" "https://zwm-mobile-recovery.foxaa.chatgpt.site/" >"$RUNNER_TEMP/zwm-0145-artifacts/reference-$target-browser.log" 2>&1
+            "$BIN" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-background-networking --hide-scrollbars --window-size="$viewport" --virtual-time-budget=6000 --screenshot="$RUNNER_TEMP/zwm-0145-artifacts/catalog-preview-$target.png" "http://127.0.0.1:4175/market#home" >"$RUNNER_TEMP/zwm-0145-artifacts/preview-$target-browser.log" 2>&1
+            test "$(stat -c %s "$RUNNER_TEMP/zwm-0145-artifacts/catalog-preview-$target.png")" -gt 30000
+            test "$(stat -c %s "$RUNNER_TEMP/zwm-0145-artifacts/astra6-review-$target.png")" -gt 30000
+            echo "BROWSER_SCREENSHOT_PASS $target"
+          done
+          for route in home explore mine help notifications session;do
+            "$BIN" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --disable-background-networking --window-size=390,844 --virtual-time-budget=3800 --dump-dom "http://127.0.0.1:4175/market#$route" >"$RUNNER_TEMP/zwm-0145-artifacts/dom-$route.html" 2>"$RUNNER_TEMP/zwm-0145-artifacts/browser-$route.log"
+            grep -q 'zwm-app' "$RUNNER_TEMP/zwm-0145-artifacts/dom-$route.html"
+            grep -q 'zwm-mobile-nav' "$RUNNER_TEMP/zwm-0145-artifacts/dom-$route.html"
+            echo "BROWSER_ROUTE_PASS $route"
+          done
+          node --input-type=module - "$RUNNER_TEMP/zwm-0145-artifacts" <<'NODE'
+          import {readFileSync,readdirSync,statSync,writeFileSync} from 'node:fs';
+          const dir=process.argv[2];
+          const checks=readdirSync(dir).filter(x=>x.startsWith('dom-')&&x.endsWith('.html')).map(name=>{
+            const html=readFileSync(dir+'/'+name,'utf8');
+            const forbidden=/#review-tools|demoRole|setDemoRole/.test(html);
+            const found={route:name.replace('dom-','').replace('.html',''),zwmApp:html.includes('zwm-app'),mobileNav:html.includes('zwm-mobile-nav'),hasDemoControls:forbidden};
+            if(forbidden)process.exitCode=1;
+            return found;
+          });
+          const screenshots=readdirSync(dir).filter(x=>x.endsWith('.png')).map(name=>({name,bytes:statSync(dir+'/'+name).size}));
+          const report={issue:'ISS-2026-0145',productionChanged:false,realGuestRoutes:checks,screenshots,visualParity99Verified:false,ownerRuntimeUAT:false};
+          writeFileSync(dir+'/report.json',JSON.stringify(report,null,2));
+          console.log('BROWSER_UAT_SUMMARY',JSON.stringify(report));
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zwmarket-0145-astra6-visual-uat
+          path: ${{ runner.temp }}/zwm-0145-artifacts
+          retention-days: 14

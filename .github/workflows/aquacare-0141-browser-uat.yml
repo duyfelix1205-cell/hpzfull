@@ -1,0 +1,216 @@
+name: ISS-2026-0141 AquaCare Guest Browser Smoke
+on:
+  push:
+    branches: [fix/ISS-2026-0141-aquacare-violet-uat]
+permissions:
+  contents: read
+jobs:
+  visual-uat:
+    runs-on: [self-hosted, linux, nexora-catalog]
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install and build complete React frontend
+        run: |
+          npm install
+          npm --workspace frontend run build
+          npm install --no-save --no-audit --no-fund playwright-core@1.52.0
+      - name: Start isolated, read-only local React preview with public API GET passthrough
+        shell: bash
+        run: |
+          set -euo pipefail
+          (npm --workspace frontend run preview -- --host 127.0.0.1 --port 4177 --strictPort > "$RUNNER_TEMP/care-preview.log" 2>&1 &)
+          cat > "$RUNNER_TEMP/care-proxy.mjs" <<'NODE'
+          import http from 'node:http';
+          const server=http.createServer(async (req,res)=>{
+            if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
+            const upstream=(req.url.startsWith('/api/')?'https://catalog.hungtp.click':'http://127.0.0.1:4177')+req.url;
+            try {
+              const response=await fetch(upstream,{method:req.method,headers:{accept:req.headers.accept||'*/*'}});
+              const excluded=new Set(['connection','transfer-encoding','content-encoding','content-length','set-cookie','content-security-policy','content-security-policy-report-only']);
+              for(const [k,v] of response.headers)if(!excluded.has(k.toLowerCase()))res.setHeader(k,v);
+              res.statusCode=response.status;
+              res.end(Buffer.from(await response.arrayBuffer()));
+            } catch(e){res.statusCode=502;res.end('Local UAT upstream unavailable');}
+          });
+          server.listen(4178,'127.0.0.1');
+          NODE
+          (node "$RUNNER_TEMP/care-proxy.mjs" > "$RUNNER_TEMP/care-proxy.log" 2>&1 &)
+          for i in $(seq 1 30);do
+            if curl -fsS -o /dev/null http://127.0.0.1:4178/care;then break;fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4178/care >/dev/null
+          echo "PREVIEW_READY read_only_public_GET_only"
+      - name: Prepare isolated Chromium dependencies without host installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN=/root/.cache/ms-playwright/chromium-1187/chrome-linux/chrome
+          test -x "$BIN"
+          echo "CHROME_MISSING_BEFORE"
+          ldd "$BIN" | grep 'not found' || true
+          mkdir -p "$RUNNER_TEMP/chrome-libs"
+          python3 - "$BIN" "$RUNNER_TEMP/chrome-libs" <<'PY'
+          import subprocess,os,sys,pathlib
+          binary=sys.argv[1];root=pathlib.Path(sys.argv[2])
+          packages={
+            'libatk-1.0.so.0':['libatk1.0-0t64','libatk1.0-0'],
+            'libatk-bridge-2.0.so.0':['libatk-bridge2.0-0t64','libatk-bridge2.0-0'],
+            'libatspi.so.0':['libatspi2.0-0t64','libatspi2.0-0'],
+            'libcups.so.2':['libcups2t64','libcups2'],
+            'libxkbcommon.so.0':['libxkbcommon0'],
+            'libnss3.so':['libnss3'],
+            'libXcomposite.so.1':['libxcomposite1'],
+            'libXdamage.so.1':['libxdamage1'],
+            'libXfixes.so.3':['libxfixes3'],
+            'libXrandr.so.2':['libxrandr2'],
+            'libgbm.so.1':['libgbm1'],
+            'libasound.so.2':['libasound2t64','libasound2'],
+            'libpangocairo-1.0.so.0':['libpangocairo-1.0-0'],
+            'libpango-1.0.so.0':['libpango-1.0-0'],
+            'libcairo.so.2':['libcairo2'],
+            'libglib-2.0.so.0':['libglib2.0-0t64','libglib2.0-0'],
+            'libdbus-1.so.3':['libdbus-1-3'],
+            'libxshmfence.so.1':['libxshmfence1'],
+            'libdrm.so.2':['libdrm2'],
+            'libavahi-common.so.3':['libavahi-common3'],
+            'libavahi-client.so.3':['libavahi-client3'],
+            'libXi.so.6':['libxi6'],
+            'libXrender.so.1':['libxrender1'],
+            'libxcb-render.so.0':['libxcb-render0'],
+            'libxcb-shm.so.0':['libxcb-shm0'],
+            'libpixman-1.so.0':['libpixman-1-0'],
+            'libthai.so.0':['libthai0'],
+            'libharfbuzz.so.0':['libharfbuzz0b'],
+            'libdatrie.so.1':['libdatrie1'],
+            'libgraphite2.so.3':['libgraphite2-3'],
+            'libX11.so.6':['libx11-6'],
+            'libXext.so.6':['libxext6'],
+            'libfontconfig.so.1':['libfontconfig1'],
+            'libfreetype.so.6':['libfreetype6'],
+            'libxcb.so.1':['libxcb1'],
+            'libXau.so.6':['libxau6'],
+            'libXdmcp.so.6':['libxdmcp6'],
+            'libbrotlidec.so.1':['libbrotli1'],
+            'libjpeg.so.8':['libjpeg-turbo8'],
+            'libpng16.so.16':['libpng16-16t64','libpng16-16'],
+            'libicuuc.so.74':['libicu74'],
+            'libicudata.so.74':['libicu74'],
+            'libicui18n.so.74':['libicu74'],
+            'libexpat.so.1':['libexpat1'],
+            'libuuid.so.1':['libuuid1'],
+            'libgobject-2.0.so.0':['libglib2.0-0t64','libglib2.0-0'],
+          }
+          libpath=root/'usr/lib/x86_64-linux-gnu'
+          for cycle in range(4):
+            env=os.environ.copy()
+            env['LD_LIBRARY_PATH']=str(libpath)+((':'+env['LD_LIBRARY_PATH']) if env.get('LD_LIBRARY_PATH') else '')
+            result=subprocess.run(['ldd',binary],capture_output=True,text=True,env=env)
+            missing=[line.strip().split(' => ')[0] for line in result.stdout.splitlines() if 'not found' in line]
+            print('ISOLATED_LIB_CYCLE',cycle,'MISSING',missing,flush=True)
+            if not missing:break
+            chosen=[]
+            for lib in missing:
+              candidates=packages.get(lib)
+              if not candidates:continue
+              for candidate in candidates:
+                if subprocess.run(['apt-cache','show',candidate],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
+                  chosen.append(candidate);break
+            chosen=list(dict.fromkeys(chosen))
+            if not chosen:break
+            print('APT_DOWNLOAD_TO_TEMP_ONLY',chosen,flush=True)
+            for pkg in chosen:
+              res=subprocess.run(['apt-get','download',pkg],cwd=root,timeout=90,capture_output=True,text=True)
+              if res.returncode:print('DOWNLOAD_FAILED',pkg,res.stderr[-350:],flush=True)
+            for deb in root.glob('*.deb'):
+              subprocess.run(['dpkg-deb','-x',str(deb),str(root)],check=True)
+              deb.unlink()
+          leftovers=subprocess.run(['ldd',binary],capture_output=True,text=True,env=env).stdout
+          missing=[line.strip() for line in leftovers.splitlines() if 'not found' in line]
+          print('CHROME_MISSING_AFTER',missing,flush=True)
+          if missing:raise SystemExit('Remaining Chromium libraries after isolated dependency extraction')
+          PY
+          echo "LD_LIBRARY_PATH=$RUNNER_TEMP/chrome-libs/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
+      - name: Capture exact Owner-approved Stage04 mobile/desktop reference (not deployed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/aquacare-0141-artifacts"
+          curl -fsS --connect-timeout 10 --max-time 100 \
+            "https://desk.hungtp.click/api/v1/issues/5d020280-99d5-4560-b48a-9bcffe5e6d38/attachments/8eef02b7-415a-47d6-9ddc-f1dde2c1c651/download" \
+            -o "$RUNNER_TEMP/aquacare-0141-stage04.html"
+          echo "ce419e58753494294fce1f51b634d36c1d710bb961008b5fd8d3102143da582e  $RUNNER_TEMP/aquacare-0141-stage04.html" | sha256sum -c -
+          node --input-type=module - <<'NODE'
+          import {chromium} from 'playwright-core';
+          import {pathToFileURL} from 'node:url';
+          const browser=await chromium.launch({headless:true,executablePath:'/root/.cache/ms-playwright/chromium-1187/chrome-linux/chrome',args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']});
+          try{
+            for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
+              const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1});
+              const page=await context.newPage();
+              await page.goto(pathToFileURL(process.env.RUNNER_TEMP+'/aquacare-0141-stage04.html').href,{waitUntil:'domcontentloaded',timeout:50000});
+              await page.waitForTimeout(1600);
+              await page.screenshot({path:process.env.RUNNER_TEMP+'/aquacare-0141-artifacts/approved-stage04-'+name+'.png',animations:'disabled'});
+              console.log('STAGE04_OWNER_REFERENCE_CAPTURED',name,width,height);
+              await context.close();
+            }
+          }finally{await browser.close()}
+          NODE
+      - name: Playwright Chromium true viewport desktop and mobile UAT
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/aquacare-0141-artifacts"
+          node --input-type=module - <<'NODE'
+          import {chromium} from 'playwright-core';
+          import {writeFileSync} from 'node:fs';
+          const folder=process.env.RUNNER_TEMP+'/aquacare-0141-artifacts';
+          const chrome='/root/.cache/ms-playwright/chromium-1187/chrome-linux/chrome';
+          const browser=await chromium.launch({headless:true,executablePath:chrome,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']});
+          const report={issue:'ISS-2026-0141',sha:process.env.GITHUB_SHA,productionChanged:false,mode:'unauthenticated-guest',checks:[],stage04PixelParityVerified:false,authenticatedCRUDVerified:false,ownerRuntimeUAT:false};
+          try{
+            for(const [name,width,height] of [['desktop',1440,900],['mobile',390,844]]){
+              const ctx=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:name==='mobile',hasTouch:name==='mobile'});
+              const page=await ctx.newPage();
+              for(const [which,url] of [['production','https://catalog.hungtp.click/care'],['candidate','http://127.0.0.1:4178/care']]){
+                await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
+                await page.waitForSelector('.hpz-app',{timeout:12000});
+                await page.waitForTimeout(1200);
+                const result=await page.evaluate(()=>({
+                  viewport:window.innerWidth,docWidth:document.documentElement.scrollWidth,
+                  app:!!document.querySelector('.aquacare-violet-app'),
+                  gate:!!document.querySelector('.aquacare-violet-gate'),
+                  loginLink:!!document.querySelector('a[href="/login"]'),
+                  title:document.querySelector('.hpz-page-head h1')?.textContent||''
+                }));
+                await page.screenshot({path:folder+'/aquacare-'+which+'-'+name+'.png',animations:'disabled'});
+                console.log('AQUACARE_BROWSER_VIEWPORT',name,which,JSON.stringify(result));
+                report.checks.push({name,which,...result});
+                if(which==='candidate'){
+                  if(result.viewport!==width || result.docWidth>width+2 || !result.gate || !result.loginLink){
+                    throw Error('Candidate '+name+' viewport, horizontal overflow or guest auth gate failed '+JSON.stringify(result));
+                  }
+                }
+              }
+              await ctx.close();
+            }
+          }finally{await browser.close()}
+          writeFileSync(folder+'/report.json',JSON.stringify(report,null,2));
+          console.log('AQUACARE_BROWSER_SMOKE_REPORT',JSON.stringify(report));
+          NODE
+          curl -fsS "http://127.0.0.1:4178/aquacare-stage03/Background/BG_Clean.png" -o "$RUNNER_TEMP/aquacare-0141-artifacts/stage03-bg.png"
+          test "$(stat -c %s "$RUNNER_TEMP/aquacare-0141-artifacts/stage03-bg.png")" -gt 50000
+          code="$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:4178/api/v1/aquacare/tanks")"
+          echo "AQUACARE_GUEST_API_HTTP=$code"
+          test "$code" = 401
+          echo "AQUACARE_BROWSER_GUEST_PASS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aquacare-0141-guest-browser-smoke
+          path: ${{ runner.temp }}/aquacare-0141-artifacts
+          retention-days: 14

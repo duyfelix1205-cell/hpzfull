@@ -1,0 +1,34 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'feat/**'
+      - 'fix/**'
+jobs:
+  test:
+    runs-on: [self-hosted, linux, nexora-catalog]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm test
+      - run: npm --workspace frontend run build
+      - run: docker compose config
+      - name: Build production backend image
+        run: docker build -t nexora-catalog-backend:ci backend
+      - name: Build production frontend image
+        run: docker build --build-arg VITE_DEPLOY_SHA=${GITHUB_SHA} --build-arg VITE_APP_ENV=ci -t nexora-catalog-frontend:ci frontend
+      - name: Render production manifests
+        env:
+          IMAGE_TAG: ci
+          CATALOG_DOMAIN: catalog.example.invalid
+        run: |
+          ./deploy/scripts/render-prod.sh deploy/k3s/prod /tmp/catalog-rendered
+          test -s /tmp/catalog-rendered/30-migrate-job.yaml
+          test -s /tmp/catalog-rendered/80-ingress.yaml
+      - name: Production data safety gates
+        run: sh deploy/scripts/check-data-safety.sh /tmp/catalog-rendered

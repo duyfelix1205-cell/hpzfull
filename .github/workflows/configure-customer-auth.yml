@@ -1,0 +1,62 @@
+name: Configure Catalog Customer Auth
+
+on:
+  workflow_run:
+    workflows: ["Deploy Product Catalog Production"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-postdeploy-customer-config
+  cancel-in-progress: false
+
+jobs:
+  configure:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, linux, nexora-catalog]
+    timeout-minutes: 10
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.CATALOG_GOOGLE_CLIENT_ID }}
+      AUTH_EMAIL_API_KEY: ${{ secrets.CATALOG_AUTH_EMAIL_API_KEY }}
+      AUTH_EMAIL_FROM: ${{ vars.CATALOG_AUTH_EMAIL_FROM }}
+      AUTH_EMAIL_API_URL: ${{ vars.CATALOG_AUTH_EMAIL_API_URL || 'https://api.resend.com/emails' }}
+      PUBLIC_BASE_URL: ${{ vars.CATALOG_PUBLIC_BASE_URL || 'https://catalog.hungtp.click' }}
+    steps:
+      - name: Apply optional customer auth provider configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v kubectl >/dev/null 2>&1 && kubectl get namespace default >/dev/null 2>&1; then KUBE='kubectl';
+          elif command -v k3s >/dev/null 2>&1 && k3s kubectl get namespace default >/dev/null 2>&1; then KUBE='k3s kubectl';
+          else KUBE='sudo -n k3s kubectl'; fi
+          [ -n "${AUTH_EMAIL_API_KEY:-}" ] && echo "::add-mask::$AUTH_EMAIL_API_KEY"
+          $KUBE -n product-catalog create secret generic catalog-customer-auth-secret \
+            --from-literal=GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-}" \
+            --from-literal=AUTH_EMAIL_API_KEY="${AUTH_EMAIL_API_KEY:-}" \
+            --from-literal=AUTH_EMAIL_FROM="${AUTH_EMAIL_FROM:-}" \
+            --from-literal=AUTH_EMAIL_API_URL="${AUTH_EMAIL_API_URL:-}" \
+            --from-literal=PUBLIC_BASE_URL="${PUBLIC_BASE_URL:-}" \
+            --dry-run=client -o yaml | $KUBE apply -f -
+          if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo '[OK] Google customer login configured'; else echo '[WARN] CATALOG_GOOGLE_CLIENT_ID missing: Google login disabled'; fi
+          if [ -n "${AUTH_EMAIL_API_KEY:-}" ] && [ -n "${AUTH_EMAIL_FROM:-}" ]; then echo '[OK] Customer verification/recovery email configured'; else echo '[WARN] Email provider credentials/from missing: verification and recovery email delivery disabled'; fi
+          $KUBE -n product-catalog rollout restart deployment/catalog-backend
+          $KUBE -n product-catalog rollout status deployment/catalog-backend --timeout=180s
+
+      - name: Verify auth provider state without exposing credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v kubectl >/dev/null 2>&1 && kubectl get namespace default >/dev/null 2>&1; then KUBE='kubectl';
+          elif command -v k3s >/dev/null 2>&1 && k3s kubectl get namespace default >/dev/null 2>&1; then KUBE='k3s kubectl';
+          else KUBE='sudo -n k3s kubectl'; fi
+          $KUBE -n product-catalog exec -i deployment/catalog-backend -- node - <<'NODE'
+          const r=await fetch('http://127.0.0.1:8080/api/v1/customer-auth/config');
+          const j=await r.json().catch(()=>null);
+          console.log(JSON.stringify({status:r.status,google_enabled:Boolean(j?.google_enabled),email_delivery_enabled:Boolean(j?.email_delivery_enabled)}));
+          if(!r.ok)process.exit(1);
+          NODE

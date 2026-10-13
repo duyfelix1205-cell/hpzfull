@@ -1,0 +1,803 @@
+[
+  {
+    "id": 1,
+    "name": "fish",
+    "display_name": "Cá cảnh",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/fish.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "4b044abb86a185a501d3bf33f39321fc196517a8878e90392d6a63abb683619f"
+      },
+      "webp": {
+        "file": "webp/fish.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "95254d8545c04fe31cc34d1881a0c6d4b52b5884f3e5e64120c15957c510f465"
+      }
+    },
+    "method": "unchanged byte-for-byte from V1.5 Batch 01",
+    "crop": null,
+    "seam_risk": "previous batch: unverified"
+  },
+  {
+    "id": 2,
+    "name": "shrimp",
+    "display_name": "Tép cảnh",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/shrimp.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "748ae75414af8ab4734c56104378ac634cd3eea14f39d181ef4970f7ed03d968"
+      },
+      "webp": {
+        "file": "webp/shrimp.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "eeada677831fc619b5f1118963fdcd689824b2e5080557a254ff9f9ce2f342fc"
+      }
+    },
+    "method": "unchanged byte-for-byte from V1.5 Batch 01",
+    "crop": null,
+    "seam_risk": "previous batch: unverified"
+  },
+  {
+    "id": 3,
+    "name": "aquatic-plants",
+    "display_name": "Cây thủy sinh",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/aquatic-plants.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "54c1b57d54e5209ef434aad2840b5260f11a6ffe36ac61fc147e176eb99797ce"
+      },
+      "webp": {
+        "file": "webp/aquatic-plants.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "49a79828f35ef3ff5faaac0f18ce9081c7956994663ac53878b9e084d9eb1628"
+      }
+    },
+    "method": "unchanged byte-for-byte from V1.5 Batch 01",
+    "crop": null,
+    "seam_risk": "previous batch: unverified"
+  },
+  {
+    "id": 4,
+    "name": "hardscape",
+    "display_name": "Hardscape",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/hardscape.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "7b8d11b0741d585faf9b7c05d5aa684ec547262d988d18e7157ec8cadb0b8e9e"
+      },
+      "webp": {
+        "file": "webp/hardscape.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "b892561902c49c63da29537b47e33091a84a171133afd22ccb38fee31aef5341"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      540,
+      87,
+      678,
+      218
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 5,
+    "name": "substrate",
+    "display_name": "Nền",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/substrate.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "40fc70127b02daf1d0547523690fbfc2b6547a2c0c125ed99d29e68e4c589dec"
+      },
+      "webp": {
+        "file": "webp/substrate.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "7beef43b9f01737a52db7d18a4a09efdbae5d213b08462539918df97f3697f3c"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      708,
+      87,
+      846,
+      218
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 6,
+    "name": "equipment",
+    "display_name": "Thiết bị",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/equipment.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "73eccf137fe2509684845101159a2290ffdb2fcf4056963100181f0825393fdf"
+      },
+      "webp": {
+        "file": "webp/equipment.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "9eeec9ba816dc413ea261a8954815393a048e9da21833d5f96c297264c9420e1"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      877,
+      87,
+      1015,
+      218
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 7,
+    "name": "accessories",
+    "display_name": "Phụ kiện",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/accessories.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "136af8492698630108fa9e74940b3f98d891032cc9967234bf2adc59b223e863"
+      },
+      "webp": {
+        "file": "webp/accessories.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "cbbbda3da5eacbb26617513d23640c9c869f4b4e78f4def96265263c63e76629"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      31,
+      285,
+      169,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 8,
+    "name": "fish-food",
+    "display_name": "Thức ăn",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/fish-food.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "783f1d45a509ae5e295ae2e919a3c97970e110717e11e1b90ee27c20a680144f"
+      },
+      "webp": {
+        "file": "webp/fish-food.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "d421f8479934397c5132bd4af9d1bb1b439389dedfc861314924b72b18b75ff8"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      200,
+      285,
+      338,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 9,
+    "name": "medicine-care",
+    "display_name": "Thuốc & Chăm sóc",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/medicine-care.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "34570b94cea61b18d95c608c2c4e227c27a3bd44d3399392636aa3063704b02c"
+      },
+      "webp": {
+        "file": "webp/medicine-care.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "dff23bb3e1a06f7cd6040dd09b56b7801479679db4bdeb3e135c1631cfa88443"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      372,
+      285,
+      510,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 10,
+    "name": "breeding",
+    "display_name": "Sinh sản & Giống",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/breeding.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "9aac39e316e7f1b460f89c0f1041c674f0c227a74a23980b0be8004a08aee476"
+      },
+      "webp": {
+        "file": "webp/breeding.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "6ddbadc1dbc9f740cc8248747dc4fb29dcd3f75e6e5799a37bf317aa4532f878"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      540,
+      285,
+      678,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 11,
+    "name": "community-fish",
+    "display_name": "Cá theo đàn",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/community-fish.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "2e64bc65c98f2a5ee7cb0d4a7fc312964911a000f40f92a2d0883f006ec4a506"
+      },
+      "webp": {
+        "file": "webp/community-fish.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "b3b6f38824cc2bccd52660523d96775db59b3588011b8e4434bda99201beaea0"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      708,
+      285,
+      846,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 12,
+    "name": "special-fish",
+    "display_name": "Cá đặc biệt",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/special-fish.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "5f5ce754a8fa659985f590e981d2350f9ba6a66592b5efa6ddadd2e57d0399ca"
+      },
+      "webp": {
+        "file": "webp/special-fish.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "303b91b316647065cdbe9c7b105f1770875e6e25ed71c4377ec3f238682014c7"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      877,
+      285,
+      1015,
+      416
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 13,
+    "name": "snails",
+    "display_name": "Ốc cảnh",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/snails.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "f9a2482abeed2116bdc1380a7c3838f29d47c2e15f7fe1ba3d964daf9868daf5"
+      },
+      "webp": {
+        "file": "webp/snails.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "5593dfbdc7bff2ecb3aa44d0aa0abd669fb49911336550474278de4fab06be02"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      31,
+      482,
+      169,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 14,
+    "name": "invertebrates",
+    "display_name": "Cua & Sinh vật khác",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/invertebrates.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "484c98d9b5e0954ccb126ad93d9889127f38e5c44364ea8d9ecf503997bdae14"
+      },
+      "webp": {
+        "file": "webp/invertebrates.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "03bb99d5be8b3dfa220ededeacecd5457605c8b8dd665c5ac6c3d20c882db9c0"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      200,
+      482,
+      338,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 15,
+    "name": "coral",
+    "display_name": "San hô",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/coral.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "54c0b7a0d9702b53c22c43129842ece2c4294764e023cab493db036d78e2e9d8"
+      },
+      "webp": {
+        "file": "webp/coral.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "bed91b6ee535345060e41e7e365095ef86063c4575996d5e863368d6660ff576"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      372,
+      482,
+      510,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 16,
+    "name": "driftwood",
+    "display_name": "Lũa",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/driftwood.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "f80f7b4af6ec4597e3b3b037ba62d1ae924a4455847ebb024e66654ff3f951b2"
+      },
+      "webp": {
+        "file": "webp/driftwood.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "60dffad96e475d0ccd1867d783ebb020ffe09c0a4f34df6d4df9685a1810c782"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      540,
+      482,
+      678,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 17,
+    "name": "leaf-litter",
+    "display_name": "Lá khô",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/leaf-litter.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "b11ad0f164f4bc85b9228d7d73b898f4b39c8604f5dc29e6cf587684fae32912"
+      },
+      "webp": {
+        "file": "webp/leaf-litter.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "b4c85cc896c3fcfc3b216f34e62e9d027dd8b5359e531aa4130f245275ae3307"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      708,
+      482,
+      846,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 18,
+    "name": "decorations",
+    "display_name": "Trang trí",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/decorations.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "70d5c98e08377859a96715cceba8d4ccaa13a48db9ab5909bd7ee2eddb5ee14a"
+      },
+      "webp": {
+        "file": "webp/decorations.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "a14d54239dc87ce3c8396deed8105b7e597c44f97afe0b18e8fe8316fc2f3be7"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      877,
+      482,
+      1015,
+      613
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 19,
+    "name": "tools",
+    "display_name": "Dụng cụ",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/tools.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "aa9468db94c3ceff21d968b0b9f8dce69e37052216de9cfc31044e9a7dec3ad4"
+      },
+      "webp": {
+        "file": "webp/tools.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "68d714b0c257de5718a3a6db9fe6d749e9bd1b1f5bbe6c80f6ca83bc9848ed47"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      31,
+      681,
+      169,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 20,
+    "name": "aquarium-sets",
+    "display_name": "Bể & Set bể",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/aquarium-sets.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "f1d440019fedb9127dab4196f8080c23f1977a6510333d71fe1ff0b87203c4ba"
+      },
+      "webp": {
+        "file": "webp/aquarium-sets.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "8807234bcd64acfa2094abfba4ff4c66f27e381bc0c094e151cea24023392535"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      200,
+      681,
+      338,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 21,
+    "name": "clearance",
+    "display_name": "Hàng thanh lý",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/clearance.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "b0bf98da07a4a4e12edf3d42a3c74254549846781c24bc68706e19f17b0056b4"
+      },
+      "webp": {
+        "file": "webp/clearance.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "45efa27845958fa1bb69b93067c65d6c7a2b94c4b60f1f941d77b4ea622013f9"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      372,
+      681,
+      510,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 22,
+    "name": "blind-box-event",
+    "display_name": "Túi mù / Event",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/blind-box-event.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "ce9225c4e29af3b00142b621e63d30b828ee5d0b609937cbbb60c584488aac2a"
+      },
+      "webp": {
+        "file": "webp/blind-box-event.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "f955d346632a841805bd181465c03ac232bcc8083ae49bf613060b7d8550bbb8"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      540,
+      681,
+      678,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 23,
+    "name": "trade-exchange",
+    "display_name": "Trao đổi / Giao lưu",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/trade-exchange.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "1c88dd3b2ab04f115108964bb0815042f0d94e6d3eb56e272a3c107cbc5cd8d2"
+      },
+      "webp": {
+        "file": "webp/trade-exchange.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "6b73c10fca2c11001834d7b09194958b2941f04a6f5e5ce2c1277b2a50f714fd"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      708,
+      681,
+      846,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  },
+  {
+    "id": 24,
+    "name": "deals",
+    "display_name": "Ưu đãi",
+    "source": "Final V1 LOCKED",
+    "background": "navy baked-in, RGB (not transparent)",
+    "status": "READY_FOR_WEB_UAT_NOT_VISUAL_APPROVED",
+    "files": {
+      "png": {
+        "file": "png/deals.png",
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "cd3a6f77e3696d2b7712798dc24bf511d9984e7f11a4e828bbacdff532494092"
+      },
+      "webp": {
+        "file": "webp/deals.webp",
+        "size": [
+          256,
+          256
+        ],
+        "sha256": "2dd00bb42cddd01d8fe9bac06ead45f0e18444de7d07dd8f7408412e9fd91eea"
+      }
+    },
+    "method": "direct unmodified RGB crop from flattened Final V1, with navy padding and resizing",
+    "crop": [
+      877,
+      681,
+      1015,
+      812
+    ],
+    "seam_risk": "possible; navy padding may differ from original gradient; glow may be clipped"
+  }
+]
